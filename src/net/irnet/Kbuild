@@ -1,0 +1,9 @@
+#
+# Makefile for the Linux IrDA IrNET protocol layer.
+#
+
+subdir-ccflags-y += -I$(src)/../../include
+
+obj-m += irnet.o
+
+irnet-y := irnet_ppp.o irnet_irda.o
