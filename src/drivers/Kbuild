@@ -1,0 +1,85 @@
+#
+# Makefile for the Linux IrDA infrared port device drivers.
+#
+# 9 Aug 2000, Christoph Hellwig <hch@infradead.org>
+# Rewritten to use lists instead of if-statements.
+#
+
+subdir-ccflags-y += -I$(src)/../include
+
+# FIR drivers
+ifdef CONFIG_USB
+  obj-m += irda-usb.o
+  obj-m += stir4200.o
+  obj-m += mcs7780.o
+endif
+ifdef CONFIG_ISA_DMA_API
+  obj-m += nsc-ircc.o
+  obj-m += w83977af_ir.o
+  obj-m += smsc-ircc2.o
+  obj-m += ali-ircc.o
+  obj-m += via-ircc.o
+endif
+ifdef CONFIG_ARCH_SA1100
+  ifdef CONFIG_DMA_SA11X0
+    obj-m += sa1100_ir.o
+  endif
+endif
+ifdef CONFIG_PCI
+  obj-m += vlsi_ir.o
+  ifndef CONFIG_64BIT
+    ifdef CONFIG_VIRT_TO_BUS
+      obj-m += donauboe.o
+    endif
+  endif
+endif
+ifdef CONFIG_ARCH_PXA
+  obj-m += pxaficp_ir.o
+endif
+ifdef CONFIG_MIPS_ALCHEMY
+  obj-m += au1k_ir.o
+endif
+# SIR drivers
+ifdef CONFIG_TTY
+  obj-m += irtty-sir.o sir-dev.o
+endif
+ifdef CONFIG_BLACKFIN
+  obj-m += bfin_sir.o
+  ifdef CONFIG_DMA_UNCACHED_NONE
+    subdir-ccflags-y += -DCONFIG_SIR_BFIN_PIO
+  else
+    subdir-ccflags-y += -DCONFIG_SIR_BFIN_DMA
+  endif
+endif
+ifdef CONFIG_SUPERH
+  ifdef CONFIG_CPU_SUBTYPE_SH7722
+    obj-m += sh_sir.o
+  endif
+  ifdef CONFIG_CPU_SUBTYPE_SH7723
+    obj-m += sh_sir.o
+  endif
+  ifdef CONFIG_CPU_SUBTYPE_SH7724
+    obj-m += sh_sir.o
+  endif
+endif
+# dongle drivers for SIR drivers
+ifdef CONFIG_TTY
+  obj-m += esi-sir.o
+  obj-m += tekram-sir.o
+  obj-m += actisys-sir.o
+  obj-m += litelink-sir.o
+  obj-m += girbil-sir.o
+  obj-m += old_belkin-sir.o
+  obj-m += mcp2120-sir.o
+  obj-m += act200l-sir.o
+  obj-m += ma600-sir.o
+  obj-m += toim3232-sir.o
+endif
+ifdef CONFIG_USB
+  obj-m += kingsun-sir.o
+  obj-m += ksdazzle-sir.o
+  obj-m += ks959-sir.o
+endif
+
+# The SIR helper module
+sir-dev-objs := sir_dev.o sir_dongle.o
