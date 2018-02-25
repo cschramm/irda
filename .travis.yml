@@ -1,0 +1,1 @@
+script: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 mainline: | tail -1 | cut -d'"' -f2)" | tar xz && curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 stable: | tail -1 | cut -d'"' -f2)" | tar xJ && for dir in linux-*; do make -C "$dir" -j defconfig modules_prepare && make -C "$dir" -j M="$(pwd)/src"; done
