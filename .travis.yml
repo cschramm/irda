@@ -1,0 +1,8 @@
+language: c
+env:
+  - BRANCH=mainline COMPRESSION=z
+  - BRANCH=stable COMPRESSION=J
+install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libelf-dev
+script: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 "$BRANCH:" | tail -1 | cut -d'"' -f2)" | tar x$COMPRESSION && make -C linux-* -j defconfig modules_prepare && make -C linux-* -j M="$(pwd)/src"
