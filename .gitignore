@@ -6,4 +6,9 @@
 .cache.mk
 .tmp_versions
 Module.symvers
+autom4te.cache
+config.log
+config.status
+configure
 modules.order
+src/dkms.conf

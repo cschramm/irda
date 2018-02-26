@@ -8,7 +8,7 @@ You can be more specific with the usual Kernel make commands, e.g. `make -C "/li
 
 ## DKMS
 
-The src directory contains a dkms.conf, so you can use `dkms add src` to add it to your DKMS instance. Use `dkms install irda/0.1` to build and install the modules once.
+Generate a dkms.conf with `autoconf -f && ./configure`, so that you can then use `dkms add src` to add it to your DKMS instance. Use `dkms install "irda/$(git show --pretty=format:"%cd~%h" --date="format:%Y%m%d" | head -1)"` to build and install the modules once.
 
 The configuration expects all drivers that do not require a specific platform to be buildable and does not include others, i.e. it expects the Kernel to have support for USB, the ISA DMA API, PCI, and TTY.
 
