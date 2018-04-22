@@ -51,6 +51,7 @@
 #include <linux/net.h>
 #include <linux/irda.h>
 #include <linux/poll.h>
+#include <linux/version.h>
 
 #include <asm/ioctls.h>		/* TIOCOUTQ, TIOCINQ */
 #include <linux/uaccess.h>
@@ -697,7 +698,11 @@ static int irda_discover_daddr_and_lsap_sel(struct irda_sock *self, char *name)
  *
  */
 static int irda_getname(struct socket *sock, struct sockaddr *uaddr,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
+			int peer)
+#else
 			int *uaddr_len, int peer)
+#endif
 {
 	struct sockaddr_irda saddr;
 	struct sock *sk = sock->sk;
@@ -720,9 +725,7 @@ static int irda_getname(struct socket *sock, struct sockaddr *uaddr,
 	pr_debug("%s(), tsap_sel = %#x\n", __func__, saddr.sir_lsap_sel);
 	pr_debug("%s(), addr = %08x\n", __func__, saddr.sir_addr);
 
-	/* uaddr_len come to us uninitialised */
-	*uaddr_len = sizeof (struct sockaddr_irda);
-	memcpy(uaddr, &saddr, *uaddr_len);
+	memcpy(uaddr, &saddr, sizeof(struct sockaddr_irda));
 
 	return 0;
 }
