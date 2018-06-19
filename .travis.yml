@@ -4,5 +4,5 @@ env:
   - BRANCH=stable
 install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libelf-dev
-script: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 "$BRANCH:" | tail -1 | cut -d'"' -f2)" | tar xJ && make -C linux-* -j defconfig modules_prepare && make -C linux-* -j M="$(pwd)/src"
+  - sudo apt-get install -y libelf-dev bsdtar
+script: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 "$BRANCH:" | tail -1 | cut -d'"' -f2)" | bsdtar xf - && make -C linux-* -j defconfig modules_prepare && make -C linux-* -j M="$(pwd)/src"
