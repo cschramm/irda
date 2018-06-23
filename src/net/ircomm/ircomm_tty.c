@@ -39,6 +39,7 @@
 #include <linux/tty_flip.h>
 #include <linux/interrupt.h>
 #include <linux/device.h>		/* for MODULE_ALIAS_CHARDEV_MAJOR */
+#include <linux/version.h>
 
 #include <linux/uaccess.h>
 
@@ -76,6 +77,7 @@ static void ircomm_tty_flow_indication(void *instance, void *sap,
 				       LOCAL_FLOW cmd);
 #ifdef CONFIG_PROC_FS
 static const struct file_operations ircomm_tty_proc_fops;
+static int ircomm_tty_proc_show(struct seq_file *m, void *v);
 #endif /* CONFIG_PROC_FS */
 static struct tty_driver *driver;
 
@@ -101,7 +103,11 @@ static const struct tty_operations ops = {
 	.hangup          = ircomm_tty_hangup,
 	.wait_until_sent = ircomm_tty_wait_until_sent,
 #ifdef CONFIG_PROC_FS
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
+	.proc_show       = ircomm_tty_proc_show,
+#else
 	.proc_fops       = &ircomm_tty_proc_fops,
+#endif
 #endif /* CONFIG_PROC_FS */
 };
 
@@ -1306,6 +1312,7 @@ static int ircomm_tty_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 18, 0)
 static int ircomm_tty_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, ircomm_tty_proc_show, NULL);
@@ -1318,6 +1325,7 @@ static const struct file_operations ircomm_tty_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+#endif
 #endif /* CONFIG_PROC_FS */
 
 MODULE_AUTHOR("Dag Brattli <dagb@cs.uit.no>");
