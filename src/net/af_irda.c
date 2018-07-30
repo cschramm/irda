@@ -2603,11 +2603,7 @@ static const struct proto_ops irda_seqpacket_ops = {
 	.socketpair =	sock_no_socketpair,
 	.accept =	irda_accept,
 	.getname =	irda_getname,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
-	.poll_mask =	datagram_poll_mask,
-#else
 	.poll =		datagram_poll,
-#endif
 	.ioctl =	irda_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl =	irda_compat_ioctl,
@@ -2631,11 +2627,7 @@ static const struct proto_ops irda_dgram_ops = {
 	.socketpair =	sock_no_socketpair,
 	.accept =	irda_accept,
 	.getname =	irda_getname,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
-	.poll_mask =	datagram_poll_mask,
-#else
 	.poll =		datagram_poll,
-#endif
 	.ioctl =	irda_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl =	irda_compat_ioctl,
@@ -2660,11 +2652,7 @@ static const struct proto_ops irda_ultra_ops = {
 	.socketpair =	sock_no_socketpair,
 	.accept =	sock_no_accept,
 	.getname =	irda_getname,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
-	.poll_mask =	datagram_poll_mask,
-#else
 	.poll =		datagram_poll,
-#endif
 	.ioctl =	irda_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl =	irda_compat_ioctl,
