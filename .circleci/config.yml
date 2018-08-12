@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  mainline:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get install -y -qq libelf-dev curl bsdtar build-essential flex bison bc libssl-dev
+      - run: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 "mainline:" | tail -1 | cut -d'"' -f2)" | bsdtar xf -
+      - run: make -C linux-* -j defconfig modules_prepare
+      - run: make -C linux-* -j M="$(pwd)/src"
+
+  stable:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get install -y -qq libelf-dev curl bsdtar build-essential flex bison bc libssl-dev
+      - run: curl -s -L "$(curl -s https://www.kernel.org/ | grep -A 3 "stable:" | tail -1 | cut -d'"' -f2)" | bsdtar xf -
+      - run: make -C linux-* -j defconfig modules_prepare
+      - run: make -C linux-* -j M="$(pwd)/src"
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - mainline
+      - stable
