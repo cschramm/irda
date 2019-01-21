@@ -434,8 +434,8 @@ static int __init nsc_ircc_open(chipio_t *info)
 
 	/* Allocate memory if needed */
 	self->rx_buff.head =
-		dma_zalloc_coherent(NULL, self->rx_buff.truesize,
-				    &self->rx_buff_dma, GFP_KERNEL);
+		dma_alloc_coherent(NULL, self->rx_buff.truesize,
+				    &self->rx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->rx_buff.head == NULL) {
 		err = -ENOMEM;
 		goto out2;
@@ -443,8 +443,8 @@ static int __init nsc_ircc_open(chipio_t *info)
 	}
 	
 	self->tx_buff.head =
-		dma_zalloc_coherent(NULL, self->tx_buff.truesize,
-				    &self->tx_buff_dma, GFP_KERNEL);
+		dma_alloc_coherent(NULL, self->tx_buff.truesize,
+				    &self->tx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->tx_buff.head == NULL) {
 		err = -ENOMEM;
 		goto out3;

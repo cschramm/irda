@@ -205,16 +205,16 @@ static int w83977af_open(int i, unsigned int iobase, unsigned int irq,
 
 	/* Allocate memory if needed */
 	self->rx_buff.head =
-		dma_zalloc_coherent(NULL, self->rx_buff.truesize,
-				    &self->rx_buff_dma, GFP_KERNEL);
+		dma_alloc_coherent(NULL, self->rx_buff.truesize,
+				    &self->rx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (!self->rx_buff.head) {
 		err = -ENOMEM;
 		goto err_out1;
 	}
 
 	self->tx_buff.head =
-		dma_zalloc_coherent(NULL, self->tx_buff.truesize,
-				    &self->tx_buff_dma, GFP_KERNEL);
+		dma_alloc_coherent(NULL, self->tx_buff.truesize,
+				    &self->tx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (!self->tx_buff.head) {
 		err = -ENOMEM;
 		goto err_out2;
