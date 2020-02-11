@@ -27,21 +27,34 @@
 #include <linux/seq_file.h>
 #include <linux/module.h>
 #include <linux/init.h>
+#include <linux/version.h>
 #include <net/net_namespace.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irlap.h>
 #include <net/irda/irlmp.h>
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 extern const struct file_operations discovery_seq_fops;
 extern const struct file_operations irlap_seq_fops;
 extern const struct file_operations irlmp_seq_fops;
 extern const struct file_operations irttp_seq_fops;
 extern const struct file_operations irias_seq_fops;
+#else
+extern const struct proc_ops discovery_seq_fops;
+extern const struct proc_ops irlap_seq_fops;
+extern const struct proc_ops irlmp_seq_fops;
+extern const struct proc_ops irttp_seq_fops;
+extern const struct proc_ops irias_seq_fops;
+#endif
 
 struct irda_entry {
 	const char *name;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 	const struct file_operations *fops;
+#else
+	const struct proc_ops *fops;
+#endif
 };
 
 struct proc_dir_entry *proc_irda;

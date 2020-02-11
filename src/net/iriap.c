@@ -32,6 +32,8 @@
 #include <linux/init.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
+#include <linux/proc_fs.h>
+#include <linux/version.h>
 
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
@@ -1074,6 +1076,7 @@ static int irias_seq_open(struct inode *inode, struct file *file)
 	return seq_open(file, &irias_seq_ops);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 const struct file_operations irias_seq_fops = {
 	.owner		= THIS_MODULE,
 	.open           = irias_seq_open,
@@ -1081,5 +1084,13 @@ const struct file_operations irias_seq_fops = {
 	.llseek         = seq_lseek,
 	.release	= seq_release,
 };
+#else
+const struct proc_ops irias_seq_fops = {
+	.proc_open    = irias_seq_open,
+	.proc_read    = seq_read,
+	.proc_lseek   = seq_lseek,
+	.proc_release	= seq_release,
+};
+#endif
 
 #endif /* PROC_FS */

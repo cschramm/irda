@@ -718,7 +718,11 @@ static int au1k_irda_hard_xmit(struct sk_buff *skb, struct net_device *dev)
  * The Tx ring has been full longer than the watchdog timeout
  * value. The transmitter must be hung?
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static void au1k_tx_timeout(struct net_device *dev)
+#else
+static void au1k_tx_timeout(struct net_device *dev, unsigned int txqueue)
+#endif
 {
 	u32 speed;
 	struct au1k_private *aup = netdev_priv(dev);

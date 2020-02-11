@@ -36,6 +36,7 @@
 #include <linux/random.h>
 #include <linux/module.h>
 #include <linux/seq_file.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irda_device.h>
@@ -1196,6 +1197,7 @@ static int irlap_seq_open(struct inode *inode, struct file *file)
 			sizeof(struct irlap_iter_state));
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 const struct file_operations irlap_seq_fops = {
 	.owner		= THIS_MODULE,
 	.open           = irlap_seq_open,
@@ -1203,5 +1205,13 @@ const struct file_operations irlap_seq_fops = {
 	.llseek         = seq_lseek,
 	.release	= seq_release_private,
 };
+#else
+const struct proc_ops irlap_seq_fops = {
+	.proc_open    = irlap_seq_open,
+	.proc_read    = seq_read,
+	.proc_lseek   = seq_lseek,
+	.proc_release	= seq_release_private,
+};
+#endif
 
 #endif /* CONFIG_PROC_FS */

@@ -39,6 +39,7 @@
 #include <linux/rtnetlink.h>
 #include <linux/moduleparam.h>
 #include <linux/bitops.h>
+#include <linux/version.h>
 
 #include <asm/byteorder.h>
 
@@ -87,6 +88,7 @@ extern struct proc_dir_entry *proc_irda;
 
 static int irlan_seq_open(struct inode *inode, struct file *file);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static const struct file_operations irlan_fops = {
 	.owner	 = THIS_MODULE,
 	.open    = irlan_seq_open,
@@ -94,6 +96,14 @@ static const struct file_operations irlan_fops = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
+#else
+static const struct proc_ops irlan_fops = {
+	.proc_open    = irlan_seq_open,
+	.proc_read    = seq_read,
+	.proc_lseek   = seq_lseek,
+	.proc_release = seq_release,
+};
+#endif
 
 extern struct proc_dir_entry *proc_irda;
 #endif /* CONFIG_PROC_FS */

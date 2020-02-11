@@ -12,6 +12,7 @@
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 #include <asm/unaligned.h>
 
 /*
@@ -1799,6 +1800,7 @@ static int irnet_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, irnet_proc_show, NULL);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static const struct file_operations irnet_proc_fops = {
 	.owner		= THIS_MODULE,
 	.open		= irnet_proc_open,
@@ -1806,6 +1808,14 @@ static const struct file_operations irnet_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+#else
+static const struct proc_ops irnet_proc_fops = {
+	.proc_open	= irnet_proc_open,
+	.proc_read	= seq_read,
+	.proc_lseek	= seq_lseek,
+	.proc_release	= single_release,
+};
+#endif
 #endif /* PROC_FS */
 
 

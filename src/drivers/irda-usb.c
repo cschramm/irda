@@ -64,6 +64,7 @@
 #include <linux/rtnetlink.h>
 #include <linux/usb.h>
 #include <linux/firmware.h>
+#include <linux/version.h>
 
 #include "irda-usb.h"
 
@@ -121,7 +122,11 @@ static void irda_usb_rx_defer_expired(struct timer_list *t);
 static int irda_usb_net_open(struct net_device *dev);
 static int irda_usb_net_close(struct net_device *dev);
 static int irda_usb_net_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static void irda_usb_net_timeout(struct net_device *dev);
+#else
+static void irda_usb_net_timeout(struct net_device *dev, unsigned int txqueue);
+#endif
 
 /************************ TRANSMIT ROUTINES ************************/
 /*
@@ -617,7 +622,11 @@ static void write_bulk_callback(struct urb *urb)
  * Note that URB that we submit have also a timeout. When the URB timeout
  * expire, the normal URB callback is called (write_bulk_callback()).
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static void irda_usb_net_timeout(struct net_device *netdev)
+#else
+static void irda_usb_net_timeout(struct net_device *netdev, unsigned int txqueue)
+#endif
 {
 	unsigned long flags;
 	struct irda_usb_cb *self = netdev_priv(netdev);

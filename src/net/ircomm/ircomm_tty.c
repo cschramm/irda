@@ -39,6 +39,7 @@
 #include <linux/tty_flip.h>
 #include <linux/interrupt.h>
 #include <linux/device.h>		/* for MODULE_ALIAS_CHARDEV_MAJOR */
+#include <linux/proc_fs.h>
 #include <linux/version.h>
 
 #include <linux/uaccess.h>
@@ -76,7 +77,11 @@ static int ircomm_tty_control_indication(void *instance, void *sap,
 static void ircomm_tty_flow_indication(void *instance, void *sap,
 				       LOCAL_FLOW cmd);
 #ifdef CONFIG_PROC_FS
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static const struct file_operations ircomm_tty_proc_fops;
+#else
+static const struct proc_ops ircomm_tty_proc_fops;
+#endif
 static int ircomm_tty_proc_show(struct seq_file *m, void *v);
 #endif /* CONFIG_PROC_FS */
 static struct tty_driver *driver;
@@ -1318,6 +1323,7 @@ static int ircomm_tty_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, ircomm_tty_proc_show, NULL);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static const struct file_operations ircomm_tty_proc_fops = {
 	.owner		= THIS_MODULE,
 	.open		= ircomm_tty_proc_open,
@@ -1325,6 +1331,14 @@ static const struct file_operations ircomm_tty_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+#else
+static const struct proc_ops ircomm_tty_proc_fops = {
+	.proc_open    = ircomm_tty_proc_open,
+	.proc_read    = seq_read,
+	.proc_lseek	  = seq_lseek,
+	.proc_release = single_release,
+};
+#endif
 #endif
 #endif /* CONFIG_PROC_FS */
 

@@ -32,6 +32,8 @@
 #include <linux/seq_file.h>
 #include <linux/init.h>
 #include <linux/slab.h>
+#include <linux/proc_fs.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irmod.h>
@@ -54,6 +56,7 @@ static void ircomm_control_indication(struct ircomm_cb *self,
 extern struct proc_dir_entry *proc_irda;
 static int ircomm_seq_open(struct inode *, struct file *);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
 static const struct file_operations ircomm_proc_fops = {
 	.owner		= THIS_MODULE,
 	.open           = ircomm_seq_open,
@@ -61,6 +64,14 @@ static const struct file_operations ircomm_proc_fops = {
 	.llseek         = seq_lseek,
 	.release	= seq_release,
 };
+#else
+static const struct proc_ops ircomm_proc_fops = {
+	.proc_open    = ircomm_seq_open,
+	.proc_read    = seq_read,
+	.proc_lseek   = seq_lseek,
+	.proc_release	= seq_release,
+};
+#endif
 #endif /* CONFIG_PROC_FS */
 
 hashbin_t *ircomm = NULL;

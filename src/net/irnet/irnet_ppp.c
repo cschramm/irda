@@ -15,6 +15,7 @@
 
 #include <linux/sched/signal.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 
 #include "irnet_ppp.h"		/* Private header */
 /* Please put other headers in irnet.h - Thanks */
