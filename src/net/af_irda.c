@@ -1876,7 +1876,11 @@ static int irda_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lon
  *
  */
 static int irda_setsockopt(struct socket *sock, int level, int optname,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 			   char __user *optval, unsigned int optlen)
+#else
+			   sockptr_t optval, unsigned int optlen)
+#endif
 {
 	struct sock *sk = sock->sk;
 	struct irda_sock *self = irda_sk(sk);
@@ -1907,7 +1911,11 @@ static int irda_setsockopt(struct socket *sock, int level, int optname,
 		}
 
 		/* Copy query to the driver. */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 		ias_opt = memdup_user(optval, optlen);
+#else
+		ias_opt = memdup_sockptr(optval, optlen);
+#endif
 		if (IS_ERR(ias_opt)) {
 			err = PTR_ERR(ias_opt);
 			goto out;
@@ -2032,7 +2040,11 @@ static int irda_setsockopt(struct socket *sock, int level, int optname,
 		}
 
 		/* Copy query to the driver. */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 		ias_opt = memdup_user(optval, optlen);
+#else
+		ias_opt = memdup_sockptr(optval, optlen);
+#endif
 		if (IS_ERR(ias_opt)) {
 			err = PTR_ERR(ias_opt);
 			goto out;
@@ -2090,7 +2102,11 @@ static int irda_setsockopt(struct socket *sock, int level, int optname,
 			goto out;
 		}
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 		if (get_user(opt, (int __user *)optval)) {
+#else
+		if (copy_from_sockptr(&opt, optval, sizeof(int))) {
+#endif
 			err = -EFAULT;
 			goto out;
 		}
@@ -2114,7 +2130,11 @@ static int irda_setsockopt(struct socket *sock, int level, int optname,
 		}
 
 		/* The input is really a (__u8 hints[2]), easier as an int */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 		if (get_user(opt, (int __user *)optval)) {
+#else
+		if (copy_from_sockptr(&opt, optval, sizeof(int))) {
+#endif
 			err = -EFAULT;
 			goto out;
 		}
@@ -2136,7 +2156,11 @@ static int irda_setsockopt(struct socket *sock, int level, int optname,
 		}
 
 		/* The input is really a (__u8 hints[2]), easier as an int */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
 		if (get_user(opt, (int __user *)optval)) {
+#else
+		if (copy_from_sockptr(&opt, optval, sizeof(int))) {
+#endif
 			err = -EFAULT;
 			goto out;
 		}
