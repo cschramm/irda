@@ -450,9 +450,6 @@ static int ircomm_tty_open(struct tty_struct *tty, struct file *filp)
 	pr_debug("%s(), %s%d, count = %d\n", __func__ , tty->driver->name,
 		 self->line, self->port.count);
 
-	/* Not really used by us, but lets do it anyway */
-	self->port.low_latency = (self->port.flags & ASYNC_LOW_LATENCY) ? 1 : 0;
-
 	/* Check if this is a "normal" ircomm device, or an irlpt device */
 	if (self->line < 0x10) {
 		self->service_type = IRCOMM_3_WIRE | IRCOMM_9_WIRE;
