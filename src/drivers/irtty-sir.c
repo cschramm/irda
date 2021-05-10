@@ -524,7 +524,6 @@ static void irtty_close(struct tty_struct *tty)
 /* ------------------------------------------------------- */
 
 static struct tty_ldisc_ops irda_ldisc = {
-	.magic		= TTY_LDISC_MAGIC,
  	.name		= "irda",
 	.flags		= 0,
 	.open		= irtty_open,

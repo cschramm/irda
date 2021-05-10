@@ -205,12 +205,7 @@ static void __exit ircomm_tty_cleanup(void)
 {
 	int ret;
 
-	ret = tty_unregister_driver(driver);
-	if (ret) {
-		net_err_ratelimited("%s(), failed to unregister driver\n",
-				    __func__);
-		return;
-	}
+	tty_unregister_driver(driver);
 
 	hashbin_delete(ircomm_tty, (FREE_FUNC) __ircomm_tty_cleanup);
 	put_tty_driver(driver);
