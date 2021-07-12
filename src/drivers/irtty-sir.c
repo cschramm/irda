@@ -34,6 +34,7 @@
 #include <linux/uaccess.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irda_device.h>
@@ -217,7 +218,11 @@ static int irtty_do_write(struct sir_dev *dev, const unsigned char *ptr, size_t 
  */
 
 static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
 			      char *fp, int count) 
+#else
+			      const char *fp, int count) 
+#endif
 {
 	struct sir_dev *dev;
 	struct sirtty_cb *priv = tty->disc_data;
@@ -524,6 +529,7 @@ static void irtty_close(struct tty_struct *tty)
 /* ------------------------------------------------------- */
 
 static struct tty_ldisc_ops irda_ldisc = {
+	.num		= N_IRDA,
  	.name		= "irda",
 	.flags		= 0,
 	.open		= irtty_open,
@@ -543,7 +549,11 @@ static int __init irtty_sir_init(void)
 {
 	int err;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
 	if ((err = tty_register_ldisc(N_IRDA, &irda_ldisc)) != 0)
+#else
+	if ((err = tty_register_ldisc(&irda_ldisc)) != 0)
+#endif
 		net_err_ratelimited("IrDA: can't register line discipline (err = %d)\n",
 				    err);
 	return err;
@@ -551,12 +561,11 @@ static int __init irtty_sir_init(void)
 
 static void __exit irtty_sir_cleanup(void) 
 {
-	int err;
-
-	if ((err = tty_unregister_ldisc(N_IRDA))) {
-		net_err_ratelimited("%s(), can't unregister line discipline (err = %d)\n",
-				    __func__, err);
-	}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
+	tty_unregister_ldisc(N_IRDA);
+#else
+        tty_unregister_ldisc(&irda_ldisc);
+#endif
 }
 
 module_init(irtty_sir_init);
