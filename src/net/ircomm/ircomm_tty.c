@@ -161,14 +161,14 @@ static const struct tty_port_operations ircomm_port_ops = {
  */
 static int __init ircomm_tty_init(void)
 {
-	driver = alloc_tty_driver(IRCOMM_TTY_PORTS);
-	if (!driver)
-		return -ENOMEM;
+	driver = tty_alloc_driver(IRCOMM_TTY_PORTS, 0);
+	if (IS_ERR(driver))
+		return PTR_ERR(driver);
 	ircomm_tty = hashbin_new(HB_LOCK);
 	if (ircomm_tty == NULL) {
 		net_err_ratelimited("%s(), can't allocate hashbin!\n",
 				    __func__);
-		put_tty_driver(driver);
+		tty_driver_kref_put(driver);
 		return -ENOMEM;
 	}
 
@@ -185,7 +185,7 @@ static int __init ircomm_tty_init(void)
 	if (tty_register_driver(driver)) {
 		net_err_ratelimited("%s(): Couldn't register serial driver\n",
 				    __func__);
-		put_tty_driver(driver);
+		tty_driver_kref_put(driver);
 		return -1;
 	}
 	return 0;
@@ -216,7 +216,7 @@ static void __exit ircomm_tty_cleanup(void)
 	tty_unregister_driver(driver);
 
 	hashbin_delete(ircomm_tty, (FREE_FUNC) __ircomm_tty_cleanup);
-	put_tty_driver(driver);
+	tty_driver_kref_put(driver);
 }
 
 /*
