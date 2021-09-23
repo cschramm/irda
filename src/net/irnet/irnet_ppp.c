@@ -766,7 +766,7 @@ dev_irnet_ioctl(
       if(!kernel_termios_to_user_termios((struct termios __user *)argp, &ap->termios))
 	err = 0;
 #else
-      if(kernel_termios_to_user_termios_1((struct termios __user *)argp, &ap->termios))
+      if(!kernel_termios_to_user_termios_1((struct termios __user *)argp, &ap->termios))
 	err = 0;
 #endif
 
