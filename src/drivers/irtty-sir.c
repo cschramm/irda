@@ -413,7 +413,11 @@ static int irtty_ioctl(struct tty_struct *tty, struct file *file, unsigned int c
 			err = -EFAULT;
 		break;
 	default:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
 		err = tty_mode_ioctl(tty, file, cmd, arg);
+#else
+		err = tty_mode_ioctl(tty, cmd, arg);
+#endif
 		break;
 	}
 	return err;
@@ -531,7 +535,9 @@ static void irtty_close(struct tty_struct *tty)
 static struct tty_ldisc_ops irda_ldisc = {
 	.num		= N_IRDA,
  	.name		= "irda",
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
 	.flags		= 0,
+#endif
 	.open		= irtty_open,
 	.close		= irtty_close,
 	.read		= NULL,
