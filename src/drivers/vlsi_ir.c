@@ -370,7 +370,15 @@ static int vlsi_seq_show(struct seq_file *seq, void *v)
 
 static int vlsi_seq_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, vlsi_seq_show, PDE_DATA(inode));
+	return single_open(
+		file,
+	        vlsi_seq_show,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
+	        PDE_DATA(inode)
+#else
+	        pde_data(inode)
+#endif
+	);
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)

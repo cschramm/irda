@@ -58,7 +58,7 @@ static int irda_nl_set_mode(struct sk_buff *skb, struct genl_info *info)
 	if (!dev)
 		return -ENODEV;
 
-	irlap = (struct irlap_cb *)dev->atalk_ptr;
+	irlap = (struct irlap_cb *)dev->ip_ptr;
 	if (!irlap) {
 		dev_put(dev);
 		return -ENODEV;
@@ -89,7 +89,7 @@ static int irda_nl_get_mode(struct sk_buff *skb, struct genl_info *info)
 		return -ENOMEM;
 	}
 
-	irlap = (struct irlap_cb *)dev->atalk_ptr;
+	irlap = (struct irlap_cb *)dev->ip_ptr;
 	if (!irlap) {
 		ret = -ENODEV;
 		goto err_out;
