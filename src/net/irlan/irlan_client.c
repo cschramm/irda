@@ -422,7 +422,9 @@ static void irlan_check_response_param(struct irlan_cb *self, char *param,
 {
 	__u16 tmp_cpu; /* Temporary value in host order */
 	__u8 *bytes;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 	int i;
+#endif
 
 	pr_debug("%s(), parm=%s\n", __func__ , param);
 

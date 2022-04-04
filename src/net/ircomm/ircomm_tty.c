@@ -202,8 +202,6 @@ static void __exit __ircomm_tty_cleanup(struct ircomm_tty_cb *self)
  */
 static void __exit ircomm_tty_cleanup(void)
 {
-	int ret;
-
 	tty_unregister_driver(driver);
 
 	hashbin_delete(ircomm_tty, (FREE_FUNC) __ircomm_tty_cleanup);
