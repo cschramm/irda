@@ -598,10 +598,14 @@ static int vlsi_process_rx(struct vlsi_ring *r, struct ring_descr *rd)
 	skb->dev = ndev;
 	skb_put_data(skb, rd->buf, len);
 	skb_reset_mac_header(skb);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
 	if (in_interrupt())
+#endif
 		netif_rx(skb);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
 	else
 		netif_rx_ni(skb);
+#endif
 
 done:
 	rd_set_status(rd, 0);
