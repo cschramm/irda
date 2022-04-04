@@ -100,9 +100,13 @@ static int __init ircomm_init(void)
 	return 0;
 }
 
+static void __ircomm_cleanup(struct ircomm_cb *self) {
+    __ircomm_close(self);
+}
+
 static void __exit ircomm_cleanup(void)
 {
-	hashbin_delete(ircomm, (FREE_FUNC) __ircomm_close);
+	hashbin_delete(ircomm, (FREE_FUNC) __ircomm_cleanup);
 
 #ifdef CONFIG_PROC_FS
 	remove_proc_entry("ircomm", proc_irda);
