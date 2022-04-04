@@ -109,7 +109,7 @@ static int mcp2120_change_speed(struct sir_dev *dev, unsigned speed)
 		default:
 			speed = 9600;
 			ret = -EINVAL;
-			/* fall through */
+			fallthrough;
 		case 9600:
 			control[0] = MCP2120_9600;
                         //printk("mcp2120 9600\n");

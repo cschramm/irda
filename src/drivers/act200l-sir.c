@@ -145,7 +145,7 @@ static int act200l_change_speed(struct sir_dev *dev, unsigned speed)
 	switch (speed) {
 	default:
 		ret = -EINVAL;
-		/* fall through */
+		fallthrough;
 	case 9600:
 		control[0] = ACT200L_REG8 |  (ACT200L_9600       & 0x0f);
 		control[1] = ACT200L_REG9 | ((ACT200L_9600 >> 4) & 0x0f);

@@ -137,7 +137,7 @@ static int girbil_change_speed(struct sir_dev *dev, unsigned speed)
 		switch (speed) {
 		default:
 			ret = -EINVAL;
-			/* fall through */
+			fallthrough;
 		case 9600:
 			control[0] = GIRBIL_9600;
 			break;

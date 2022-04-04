@@ -245,7 +245,7 @@ static inline __u8 *stuff_fir(__u8 *p, __u8 c)
 	case 0x7f:
 		*p++ = 0x7d;
 		c ^= IRDA_TRANS;
-		/* fall through */
+		fallthrough;
 	default:
 		*p++ = c;
 	}
@@ -414,7 +414,7 @@ static void stir_fir_chars(struct stir_cb *stir,
 			rx_buff->state = INSIDE_FRAME;
 			rx_buff->in_frame = TRUE;
 
-			/* fall through */
+			fallthrough;
 		case INSIDE_FRAME:
 			switch(byte) {
 			case FIR_CE:

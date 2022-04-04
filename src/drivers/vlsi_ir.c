@@ -793,7 +793,7 @@ static int vlsi_set_baud(vlsi_irda_dev_t *idev, unsigned iobase)
 				net_warn_ratelimited("%s: undefined baudrate %d - fallback to 9600!\n",
 						     __func__, baudrate);
 				baudrate = 9600;
-				/* fallthru */
+				fallthrough;
 			case 2400:
 			case 9600:
 			case 19200:

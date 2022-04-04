@@ -253,7 +253,7 @@ static void sirdev_config_fsm(struct work_struct *work)
 		default:
 			net_err_ratelimited("%s - undefined state\n", __func__);
 			fsm->result = -EINVAL;
-			/* fall thru */
+			fallthrough;
 
 		case SIRDEV_STATE_ERROR:
 			net_err_ratelimited("%s - error: %d\n",
@@ -264,7 +264,7 @@ static void sirdev_config_fsm(struct work_struct *work)
 #else
 			netif_wake_queue(dev->netdev);
 #endif
-			/* fall thru */
+			fallthrough;
 
 		case SIRDEV_STATE_COMPLETE:
 			/* config change finished, so we are not busy any longer */

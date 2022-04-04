@@ -829,7 +829,7 @@ static void irda_usb_receive(struct urb *urb)
 		case -EILSEQ:
 			self->netdev->stats.rx_crc_errors++;
 			/* Also precursor to a hot-unplug on UHCI. */
-			/* Fallthrough... */
+			fallthrough;
 		case -ECONNRESET:
 			/* Random error, if I remember correctly */
 			/* uhci_cleanup_unlink() is going to kill the Rx

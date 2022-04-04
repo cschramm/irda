@@ -133,7 +133,7 @@ static int tekram_change_speed(struct sir_dev *dev, unsigned speed)
 		default:
 			speed = 9600;
 			ret = -EINVAL;
-			/* fall thru */
+			fallthrough;
 		case 9600:
 			byte = TEKRAM_PW|TEKRAM_9600;
 			break;

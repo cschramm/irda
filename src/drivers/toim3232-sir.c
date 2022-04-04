@@ -239,7 +239,7 @@ static int toim3232_change_speed(struct sir_dev *dev, unsigned speed)
 		default:
 			speed = 9600;
 			ret = -EINVAL;
-			/* fall thru */
+			fallthrough;
 		case 9600:
 			byte = TOIM3232_PW|TOIM3232_9600;
 			break;

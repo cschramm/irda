@@ -109,7 +109,7 @@ static int esi_change_speed(struct sir_dev *dev, unsigned speed)
 	default:
 		ret = -EINVAL;
 		speed = 9600;
-		/* fall through */
+		fallthrough;
 	case 9600:
 		dtr = FALSE;
 		rts = TRUE;
