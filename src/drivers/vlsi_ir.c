@@ -437,8 +437,8 @@ static struct vlsi_ring *vlsi_alloc_ring(struct pci_dev *pdev, struct ring_descr
 		rd->hw = hwmap + i;
 		rd->buf = kmalloc(len, GFP_KERNEL|GFP_DMA);
 		if (rd->buf)
-			busaddr = pci_map_single(pdev, rd->buf, len, dir);
-		if (rd->buf == NULL || pci_dma_mapping_error(pdev, busaddr)) {
+			busaddr = dma_map_single(&pdev->dev, rd->buf, len, dir);
+		if (rd->buf == NULL || dma_mapping_error(&pdev->dev, busaddr)) {
 			if (rd->buf) {
 				net_err_ratelimited("%s: failed to create PCI-MAP for %p\n",
 						    __func__, rd->buf);
@@ -449,7 +449,7 @@ static struct vlsi_ring *vlsi_alloc_ring(struct pci_dev *pdev, struct ring_descr
 				rd = r->rd + j;
 				busaddr = rd_get_addr(rd);
 				rd_set_addr_status(rd, 0, 0);
-				pci_unmap_single(pdev, busaddr, len, dir);
+				dma_unmap_single(&pdev->dev, busaddr, len, dir);
 				kfree(rd->buf);
 				rd->buf = NULL;
 			}
@@ -476,7 +476,7 @@ static int vlsi_free_ring(struct vlsi_ring *r)
 		busaddr = rd_get_addr(rd);
 		rd_set_addr_status(rd, 0, 0);
 		if (busaddr)
-			pci_unmap_single(r->pdev, busaddr, r->len, r->dir);
+			dma_unmap_single(&r->pdev->dev, busaddr, r->len, r->dir);
 		kfree(rd->buf);
 	}
 	kfree(r);
@@ -491,20 +491,20 @@ static int vlsi_create_hwif(vlsi_irda_dev_t *idev)
 	idev->virtaddr = NULL;
 	idev->busaddr = 0;
 
-	ringarea = pci_zalloc_consistent(idev->pdev, HW_RING_AREA_SIZE,
-					 &idev->busaddr);
+	ringarea = dma_alloc_coherent(&idev->pdev->dev, HW_RING_AREA_SIZE,
+				      &idev->busaddr, GFP_DMA);
 	if (!ringarea)
 		goto out;
 
 	hwmap = (struct ring_descr_hw *)ringarea;
 	idev->rx_ring = vlsi_alloc_ring(idev->pdev, hwmap, ringsize[1],
-					XFER_BUF_SIZE, PCI_DMA_FROMDEVICE);
+					XFER_BUF_SIZE, DMA_FROM_DEVICE);
 	if (idev->rx_ring == NULL)
 		goto out_unmap;
 
 	hwmap += MAX_RING_DESCR;
 	idev->tx_ring = vlsi_alloc_ring(idev->pdev, hwmap, ringsize[0],
-					XFER_BUF_SIZE, PCI_DMA_TODEVICE);
+					XFER_BUF_SIZE, DMA_TO_DEVICE);
 	if (idev->tx_ring == NULL)
 		goto out_free_rx;
 
@@ -515,7 +515,7 @@ out_free_rx:
 	vlsi_free_ring(idev->rx_ring);
 out_unmap:
 	idev->rx_ring = idev->tx_ring = NULL;
-	pci_free_consistent(idev->pdev, HW_RING_AREA_SIZE, ringarea, idev->busaddr);
+	dma_free_coherent(&idev->pdev->dev, HW_RING_AREA_SIZE, ringarea, idev->busaddr);
 	idev->busaddr = 0;
 out:
 	return -ENOMEM;
@@ -528,7 +528,7 @@ static int vlsi_destroy_hwif(vlsi_irda_dev_t *idev)
 	idev->rx_ring = idev->tx_ring = NULL;
 
 	if (idev->busaddr)
-		pci_free_consistent(idev->pdev,HW_RING_AREA_SIZE,idev->virtaddr,idev->busaddr);
+		dma_free_coherent(&idev->pdev->dev,HW_RING_AREA_SIZE,idev->virtaddr,idev->busaddr);
 
 	idev->virtaddr = NULL;
 	idev->busaddr = 0;
@@ -547,7 +547,7 @@ static int vlsi_process_rx(struct vlsi_ring *r, struct ring_descr *rd)
 	struct net_device *ndev = pci_get_drvdata(r->pdev);
 	vlsi_irda_dev_t *idev = netdev_priv(ndev);
 
-	pci_dma_sync_single_for_cpu(r->pdev, rd_get_addr(rd), r->len, r->dir);
+	dma_sync_single_for_cpu(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 	/* dma buffer now owned by the CPU */
 	status = rd_get_status(rd);
 	if (status & RD_RX_ERROR) {
@@ -573,7 +573,7 @@ static int vlsi_process_rx(struct vlsi_ring *r, struct ring_descr *rd)
 
 	if (idev->mode == IFF_SIR) {	/* hw checks CRC in MIR, FIR mode */
 
-		/* rd->buf is a streaming PCI_DMA_FROMDEVICE map. Doing the
+		/* rd->buf is a streaming DMA_FROM_DEVICE map. Doing the
 		 * endian-adjustment there just in place will dirty a cache line
 		 * which belongs to the map and thus we must be sure it will
 		 * get flushed before giving the buffer back to hardware.
@@ -632,7 +632,7 @@ static void vlsi_fill_rx(struct vlsi_ring *r)
 				break;	/* probably not worth logging? */
 		}
 		/* give dma buffer back to busmaster */
-		pci_dma_sync_single_for_device(r->pdev, rd_get_addr(rd), r->len, r->dir);
+		dma_sync_single_for_device(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 		rd_activate(rd);
 	}
 }
@@ -703,7 +703,7 @@ static void vlsi_unarm_rx(vlsi_irda_dev_t *idev)
 				ret = -VLSI_RX_DROP;
 			}
 			rd_set_count(rd, 0);
-			pci_dma_sync_single_for_cpu(r->pdev, rd_get_addr(rd), r->len, r->dir);
+			dma_sync_single_for_cpu(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 			if (rd->skb) {
 				dev_kfree_skb_any(rd->skb);
 				rd->skb = NULL;
@@ -741,7 +741,7 @@ static int vlsi_process_tx(struct vlsi_ring *r, struct ring_descr *rd)
 	int		len;
 	int		ret;
 
-	pci_dma_sync_single_for_cpu(r->pdev, rd_get_addr(rd), r->len, r->dir);
+	dma_sync_single_for_cpu(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 	/* dma buffer now owned by the CPU */
 	status = rd_get_status(rd);
 	if (status & RD_TX_UNDRN)
@@ -998,7 +998,7 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 	 * CPU-driven changes visible from the pci bus).
 	 */
 
-	pci_dma_sync_single_for_device(r->pdev, rd_get_addr(rd), r->len, r->dir);
+	dma_sync_single_for_device(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 
 /*	Switching to TX mode here races with the controller
  *	which may stop TX at any time when fetching an inactive descriptor
@@ -1127,7 +1127,7 @@ static void vlsi_unarm_tx(vlsi_irda_dev_t *idev)
 		if (rd_is_active(rd)) {
 			rd_set_status(rd, 0);
 			rd_set_count(rd, 0);
-			pci_dma_sync_single_for_cpu(r->pdev, rd_get_addr(rd), r->len, r->dir);
+			dma_sync_single_for_cpu(&r->pdev->dev, rd_get_addr(rd), r->len, r->dir);
 			if (rd->skb) {
 				dev_kfree_skb_any(rd->skb);
 				rd->skb = NULL;
@@ -1591,8 +1591,8 @@ static int vlsi_irda_init(struct net_device *ndev)
 	 * see include file for details why we need these 2 masks, in this order!
 	 */
 
-	if (pci_set_dma_mask(pdev,DMA_MASK_USED_BY_HW) ||
-	    pci_set_dma_mask(pdev,DMA_MASK_MSTRPAGE)) {
+	if (dma_set_mask(&pdev->dev,DMA_MASK_USED_BY_HW) ||
+	    dma_set_mask(&pdev->dev,DMA_MASK_MSTRPAGE)) {
 		net_err_ratelimited("%s: aborting due to PCI BM-DMA address limitations\n",
 				    __func__);
 		return -1;
