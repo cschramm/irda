@@ -129,24 +129,14 @@ static const struct nla_policy irda_nl_policy[IRDA_NL_ATTR_MAX + 1] = {
 static const struct genl_ops irda_nl_ops[] = {
 	{
 		.cmd = IRDA_NL_CMD_SET_MODE,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0)
                 .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-#endif
 		.doit = irda_nl_set_mode,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
-		.policy = irda_nl_policy,
-#endif
 		.flags = GENL_ADMIN_PERM,
 	},
 	{
 		.cmd = IRDA_NL_CMD_GET_MODE,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0)
                 .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-#endif
 		.doit = irda_nl_get_mode,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
-		.policy = irda_nl_policy,
-#endif
 		/* can be retrieved by unprivileged users */
 	},
 
@@ -157,9 +147,7 @@ static struct genl_family irda_nl_family __ro_after_init = {
 	.hdrsize = 0,
 	.version = IRDA_NL_VERSION,
 	.maxattr = IRDA_NL_CMD_MAX,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0)
         .policy = irda_nl_policy,
-#endif
 	.module = THIS_MODULE,
 	.ops = irda_nl_ops,
 	.n_ops = ARRAY_SIZE(irda_nl_ops),
