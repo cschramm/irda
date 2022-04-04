@@ -147,7 +147,7 @@ struct irlap_cb *irlap_open(struct net_device *dev, struct qos_info *qos,
 	} while ((self->saddr == 0x0) || (self->saddr == BROADCAST) ||
 		 (hashbin_lock_find(irlap, self->saddr, NULL)) );
 	/* Copy to the driver */
-	memcpy(dev->dev_addr, &self->saddr, 4);
+	memcpy((void *)dev->dev_addr, &self->saddr, 4);
 
 	timer_setup(&self->slot_timer, NULL, 0);
 	timer_setup(&self->query_timer, NULL, 0);
