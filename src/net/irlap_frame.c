@@ -1291,7 +1291,7 @@ int irlap_driver_rcv(struct sk_buff *skb, struct net_device *dev,
 		goto out;
 
 	/* FIXME: should we get our own field? */
-	self = (struct irlap_cb *) dev->ip_ptr;
+	self = (struct irlap_cb *) dev->atalk_ptr;
 
 	/* If the net device is down, then IrLAP is gone! */
 	if (!self || self->magic != LAP_MAGIC)

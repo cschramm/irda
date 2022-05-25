@@ -109,7 +109,7 @@ void irda_device_set_media_busy(struct net_device *dev, int status)
 
 	pr_debug("%s(%s)\n", __func__, status ? "TRUE" : "FALSE");
 
-	self = (struct irlap_cb *)dev->ip_ptr;
+	self = (struct irlap_cb *)dev->atalk_ptr;
 
 	/* Some drivers may enable the receive interrupt before calling
 	 * irlap_open(), or they may disable the receive interrupt

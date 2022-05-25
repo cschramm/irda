@@ -128,7 +128,7 @@ struct irlap_cb *irlap_open(struct net_device *dev, struct qos_info *qos,
 	}
 
 	/* FIXME: should we get our own field? */
-	dev->ip_ptr = (struct in_device *) self;
+	dev->atalk_ptr = self;
 
 	self->state = LAP_OFFLINE;
 
