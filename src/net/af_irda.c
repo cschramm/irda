@@ -1363,9 +1363,13 @@ static int irda_recvmsg_dgram(struct socket *sock, struct msghdr *msg,
 	struct sk_buff *skb;
 	size_t copied;
 	int err;
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 0)
 	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
 				flags & MSG_DONTWAIT, &err);
+#else
+
+	skb = skb_recv_datagram(sk, flags, &err);
+#endif
 	if (!skb)
 		return err;
 
