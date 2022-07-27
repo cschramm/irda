@@ -6,8 +6,12 @@ subdir-ccflags-y += -I$(src)/../include
 
 obj-m += irda.o
 obj-m += irlan/
-obj-m += irnet/
-obj-m += ircomm/
+ifdef CONFIG_PPP
+  obj-m += irnet/
+endif
+ifdef CONFIG_TTY
+  obj-m += ircomm/
+endif
 
 irda-y := iriap.o iriap_event.o irlmp.o irlmp_event.o irlmp_frame.o \
           irlap.o irlap_event.o irlap_frame.o timer.o qos.o irqueue.o \
