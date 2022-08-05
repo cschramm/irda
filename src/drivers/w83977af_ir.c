@@ -53,6 +53,7 @@
 #include <linux/rtnetlink.h>
 #include <linux/dma-mapping.h>
 #include <linux/gfp.h>
+#include <linux/platform_device.h>
 
 #include <asm/io.h>
 #include <asm/dma.h>
@@ -199,25 +200,32 @@ static int w83977af_open(int i, unsigned int iobase, unsigned int irq,
 	self->qos.min_turn_time.bits = qos_mtt_bits;
 	irda_qos_bits_to_value(&self->qos);
 
+    self->pldev = platform_device_register_simple(driver_name,
+                                                  i, NULL, 0);
+    if (IS_ERR(self->pldev)) {
+      err = PTR_ERR(self->pldev);
+      goto err_out1;
+    }
+
 	/* Max DMA buffer size needed = (data_size + 6) * (window_size) + 6; */
 	self->rx_buff.truesize = 14384;
 	self->tx_buff.truesize = 4000;
 
 	/* Allocate memory if needed */
 	self->rx_buff.head =
-		dma_alloc_coherent(NULL, self->rx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				    &self->rx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (!self->rx_buff.head) {
 		err = -ENOMEM;
-		goto err_out1;
+		goto err_out2;
 	}
 
 	self->tx_buff.head =
-		dma_alloc_coherent(NULL, self->tx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				    &self->tx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (!self->tx_buff.head) {
 		err = -ENOMEM;
-		goto err_out2;
+		goto err_out3;
 	}
 
 	self->rx_buff.in_frame = FALSE;
@@ -232,7 +240,7 @@ static int w83977af_open(int i, unsigned int iobase, unsigned int irq,
 	if (err) {
 		net_err_ratelimited("%s:, register_netdevice() failed!\n",
 				    __func__);
-		goto err_out3;
+		goto err_out4;
 	}
 	net_info_ratelimited("IrDA: Registered device %s\n", dev->name);
 
@@ -240,12 +248,14 @@ static int w83977af_open(int i, unsigned int iobase, unsigned int irq,
 	dev_self[i] = self;
 
 	return 0;
-err_out3:
-	dma_free_coherent(NULL, self->tx_buff.truesize,
+err_out4:
+	dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 			  self->tx_buff.head, self->tx_buff_dma);
-err_out2:
-	dma_free_coherent(NULL, self->rx_buff.truesize,
+err_out3:
+	dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 			  self->rx_buff.head, self->rx_buff_dma);
+err_out2:
+      platform_device_unregister(self->pldev);
 err_out1:
 	free_netdev(dev);
 err_out:
@@ -264,6 +274,8 @@ static int w83977af_close(struct w83977af_ir *self)
 	int iobase;
 
 	iobase = self->io.fir_base;
+
+    platform_device_unregister(self->pldev);
 
 #ifdef CONFIG_USE_W977_PNP
 	/* enter PnP configuration mode */
@@ -285,11 +297,11 @@ static int w83977af_close(struct w83977af_ir *self)
 	release_region(self->io.fir_base, self->io.fir_ext);
 
 	if (self->tx_buff.head)
-		dma_free_coherent(NULL, self->tx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				  self->tx_buff.head, self->tx_buff_dma);
 
 	if (self->rx_buff.head)
-		dma_free_coherent(NULL, self->rx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				  self->rx_buff.head, self->rx_buff_dma);
 
 	free_netdev(self->netdev);

@@ -427,6 +427,13 @@ static int __init nsc_ircc_open(chipio_t *info)
 	
 	self->qos.min_turn_time.bits = qos_mtt_bits;
 	irda_qos_bits_to_value(&self->qos);
+
+    self->pldev = platform_device_register_simple(NSC_IRCC_DRIVER_NAME,
+                                                  self->index, NULL, 0);
+    if (IS_ERR(self->pldev)) {
+        err = PTR_ERR(self->pldev);
+        goto out2;
+    }
 	
 	/* Max DMA buffer size needed = (data_size + 6) * (window_size) + 6; */
 	self->rx_buff.truesize = 14384; 
@@ -434,20 +441,20 @@ static int __init nsc_ircc_open(chipio_t *info)
 
 	/* Allocate memory if needed */
 	self->rx_buff.head =
-		dma_alloc_coherent(NULL, self->rx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				    &self->rx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->rx_buff.head == NULL) {
 		err = -ENOMEM;
-		goto out2;
+		goto out3;
 
 	}
 	
 	self->tx_buff.head =
-		dma_alloc_coherent(NULL, self->tx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				    &self->tx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->tx_buff.head == NULL) {
 		err = -ENOMEM;
-		goto out3;
+		goto out4;
 	}
 
 	self->rx_buff.in_frame = FALSE;
@@ -466,7 +473,7 @@ static int __init nsc_ircc_open(chipio_t *info)
 	if (err) {
 		net_err_ratelimited("%s(), register_netdev() failed!\n",
 				    __func__);
-		goto out4;
+		goto out5;
 	}
 	net_info_ratelimited("IrDA: Registered device %s\n", dev->name);
 
@@ -485,24 +492,18 @@ static int __init nsc_ircc_open(chipio_t *info)
 	self->io.dongle_id = dongle_id;
 	nsc_ircc_init_dongle_interface(self->io.fir_base, dongle_id);
 
- 	self->pldev = platform_device_register_simple(NSC_IRCC_DRIVER_NAME,
- 						      self->index, NULL, 0);
- 	if (IS_ERR(self->pldev)) {
- 		err = PTR_ERR(self->pldev);
- 		goto out5;
- 	}
  	platform_set_drvdata(self->pldev, self);
 
 	return chip_index;
 
  out5:
- 	unregister_netdev(dev);
- out4:
-	dma_free_coherent(NULL, self->tx_buff.truesize,
+	dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 			  self->tx_buff.head, self->tx_buff_dma);
- out3:
-	dma_free_coherent(NULL, self->rx_buff.truesize,
+ out4:
+	dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 			  self->rx_buff.head, self->rx_buff_dma);
+ out3:
+    platform_device_unregister(self->pldev);
  out2:
 	release_region(self->io.fir_base, self->io.fir_ext);
  out1:
@@ -536,11 +537,11 @@ static int __exit nsc_ircc_close(struct nsc_ircc_cb *self)
 	release_region(self->io.fir_base, self->io.fir_ext);
 
 	if (self->tx_buff.head)
-		dma_free_coherent(NULL, self->tx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				  self->tx_buff.head, self->tx_buff_dma);
 	
 	if (self->rx_buff.head)
-		dma_free_coherent(NULL, self->rx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				  self->rx_buff.head, self->rx_buff_dma);
 
 	dev_self[self->index] = NULL;

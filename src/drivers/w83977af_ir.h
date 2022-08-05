@@ -188,6 +188,8 @@ struct w83977af_ir {
 	spinlock_t lock;           /* For serializing operations */
 	
 	__u32 new_speed;
+
+    struct platform_device *pldev;
 };
 
 static inline void switch_bank( int iobase, int set)

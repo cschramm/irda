@@ -565,20 +565,27 @@ static int smsc_ircc_open(unsigned int fir_base, unsigned int sir_base, u8 dma, 
 	dev_self[dev_count] = self;
 	spin_lock_init(&self->lock);
 
+    self->pldev = platform_device_register_simple(SMSC_IRCC2_DRIVER_NAME,
+                                                  dev_count, NULL, 0);
+    if (IS_ERR(self->pldev)) {
+        err = PTR_ERR(self->pldev);
+        goto err_out2;
+    }
+
 	self->rx_buff.truesize = SMSC_IRCC2_RX_BUFF_TRUESIZE;
 	self->tx_buff.truesize = SMSC_IRCC2_TX_BUFF_TRUESIZE;
 
 	self->rx_buff.head =
-		dma_alloc_coherent(NULL, self->rx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				    &self->rx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->rx_buff.head == NULL)
-		goto err_out2;
+		goto err_out3;
 
 	self->tx_buff.head =
-		dma_alloc_coherent(NULL, self->tx_buff.truesize,
+		dma_alloc_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				    &self->tx_buff_dma, GFP_KERNEL | __GFP_ZERO);
 	if (self->tx_buff.head == NULL)
-		goto err_out3;
+		goto err_out4;
 
 	self->rx_buff.in_frame = FALSE;
 	self->rx_buff.state = OUTSIDE_FRAME;
@@ -599,15 +606,9 @@ static int smsc_ircc_open(unsigned int fir_base, unsigned int sir_base, u8 dma, 
 	if (err) {
 		net_err_ratelimited("%s, Network device registration failed!\n",
 				    driver_name);
-		goto err_out4;
-	}
-
-	self->pldev = platform_device_register_simple(SMSC_IRCC2_DRIVER_NAME,
-						      dev_count, NULL, 0);
-	if (IS_ERR(self->pldev)) {
-		err = PTR_ERR(self->pldev);
 		goto err_out5;
 	}
+
 	platform_set_drvdata(self->pldev, self);
 
 	net_info_ratelimited("IrDA: Registered device %s\n", dev->name);
@@ -616,14 +617,13 @@ static int smsc_ircc_open(unsigned int fir_base, unsigned int sir_base, u8 dma, 
 	return 0;
 
  err_out5:
-	unregister_netdev(self->netdev);
-
- err_out4:
-	dma_free_coherent(NULL, self->tx_buff.truesize,
+	dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 			  self->tx_buff.head, self->tx_buff_dma);
- err_out3:
-	dma_free_coherent(NULL, self->rx_buff.truesize,
+ err_out4:
+	dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 			  self->rx_buff.head, self->rx_buff_dma);
+ err_out3:
+    platform_device_unregister(self->pldev);
  err_out2:
 	free_netdev(self->netdev);
 	dev_self[dev_count] = NULL;
@@ -1867,11 +1867,11 @@ static int __exit smsc_ircc_close(struct smsc_ircc_cb *self)
 	release_region(self->io.sir_base, self->io.sir_ext);
 
 	if (self->tx_buff.head)
-		dma_free_coherent(NULL, self->tx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->tx_buff.truesize,
 				  self->tx_buff.head, self->tx_buff_dma);
 
 	if (self->rx_buff.head)
-		dma_free_coherent(NULL, self->rx_buff.truesize,
+		dma_free_coherent(&self->pldev->dev, self->rx_buff.truesize,
 				  self->rx_buff.head, self->rx_buff_dma);
 
 	free_netdev(self->netdev);
