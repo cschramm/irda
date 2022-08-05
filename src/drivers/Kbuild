@@ -43,14 +43,6 @@ endif
 ifdef CONFIG_TTY
   obj-m += irtty-sir.o sir-dev.o
 endif
-ifdef CONFIG_BLACKFIN
-  obj-m += bfin_sir.o
-  ifdef CONFIG_DMA_UNCACHED_NONE
-    subdir-ccflags-y += -DCONFIG_SIR_BFIN_PIO
-  else
-    subdir-ccflags-y += -DCONFIG_SIR_BFIN_DMA
-  endif
-endif
 ifdef CONFIG_SUPERH
   ifdef CONFIG_CPU_SUBTYPE_SH7722
     obj-m += sh_sir.o

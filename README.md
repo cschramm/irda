@@ -24,10 +24,6 @@ The configuration expects all drivers that do not require a specific platform to
 
 IrTTY for use with Linux's serial driver for all IrDA ports that are 16550 compatible. Most IrDA chips are 16550 compatible. Using IrTTY will however limit the speed of the connection to 115200 bps (IrDA SIR mode).
 
-### bfin_sir
-
-SIR on Blackfin UART. Uses DMA mode if the uncached DMA region is available or PIO mode otherwise. To activate this driver you can start irattach like: `irattach irda0 -s`.
-
 ### sh_sir
 
 SIR on SuperH UART.
