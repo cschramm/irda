@@ -4,7 +4,7 @@ Out-of-tree irda subsystem and drivers for Linux
 
 The different drivers require different kernel features to be enabled, especially USB, the ISA DMA API, PCI and TTY. Others target specific platforms. Dependencies can be seen in src/drivers/Kbuild.
 
-Starting with Linux 5.17 the irda module requires Appletalk protocol support to be enabled.
+The irda module requires Appletalk protocol support to be enabled.
 
 ## Build
 
