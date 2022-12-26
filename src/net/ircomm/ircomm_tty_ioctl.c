@@ -113,7 +113,11 @@ static void ircomm_tty_change_speed(struct ircomm_tty_cb *self,
  *    do something rational.
  */
 void ircomm_tty_set_termios(struct tty_struct *tty,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 			    struct ktermios *old_termios)
+#else
+			    const struct ktermios *old_termios)
+#endif
 {
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned int cflag = tty->termios.c_cflag;
