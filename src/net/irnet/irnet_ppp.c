@@ -762,13 +762,8 @@ dev_irnet_ioctl(
       if (mutex_lock_interruptible(&ap->lock))
 	      return -EINTR;
 
-#ifndef TCGETS2
-      if(!kernel_termios_to_user_termios((struct termios __user *)argp, &ap->termios))
+      if(!copy_to_user((struct termios __user *)argp, &ap->termios, sizeof(struct termios)))
 	err = 0;
-#else
-      if(!kernel_termios_to_user_termios_1((struct termios __user *)argp, &ap->termios))
-	err = 0;
-#endif
 
       mutex_unlock(&ap->lock);
       break;
@@ -778,13 +773,8 @@ dev_irnet_ioctl(
       if (mutex_lock_interruptible(&ap->lock))
 	      return -EINTR;
 
-#ifndef TCGETS2
-      if(!user_termios_to_kernel_termios(&ap->termios, (struct termios __user *)argp))
+      if(!copy_from_user(&ap->termios, (struct termios __user *)argp, sizeof(struct termios)))
 	err = 0;
-#else
-      if(!user_termios_to_kernel_termios_1(&ap->termios, (struct termios __user *)argp))
-	err = 0;
-#endif
 
       mutex_unlock(&ap->lock);
       break;
