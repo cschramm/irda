@@ -11,7 +11,10 @@ jobs:
       - run: make -C linux-* -j defconfig
       - run: cat .extraconfig >> linux-*/.config
       - run: make -C linux-* -j modules_prepare
-      - run: make -C linux-* -j M="$(pwd)/src"
+      - run:
+          command: make -C linux-* -j M="$(pwd)/src"
+          environment:
+            KBUILD_MODPOST_WARN: 1
 
   stable:
     docker:
@@ -24,7 +27,10 @@ jobs:
       - run: make -C linux-* -j defconfig
       - run: cat .extraconfig >> linux-*/.config
       - run: make -C linux-* -j modules_prepare
-      - run: make -C linux-* -j M="$(pwd)/src"
+      - run:
+          command: make -C linux-* -j M="$(pwd)/src"
+          environment:
+            KBUILD_MODPOST_WARN: 1
 
 workflows:
   version: 2

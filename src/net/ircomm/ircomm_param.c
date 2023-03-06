@@ -29,6 +29,7 @@
 #include <linux/gfp.h>
 #include <linux/workqueue.h>
 #include <linux/interrupt.h>
+#include <linux/net.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/parameters.h>

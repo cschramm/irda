@@ -31,6 +31,7 @@
 #include <linux/termios.h>
 #include <linux/tty.h>
 #include <linux/serial.h>
+#include <linux/net.h>
 
 #include <linux/uaccess.h>
 

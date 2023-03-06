@@ -41,6 +41,7 @@
 #include <linux/device.h>		/* for MODULE_ALIAS_CHARDEV_MAJOR */
 #include <linux/proc_fs.h>
 #include <linux/version.h>
+#include <linux/net.h>
 
 #include <linux/uaccess.h>
 
@@ -115,7 +116,11 @@ static const struct tty_operations ops = {
 #endif /* CONFIG_PROC_FS */
 };
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
+static void ircomm_port_raise_dtr_rts(struct tty_port *port, bool raise)
+#else
 static void ircomm_port_raise_dtr_rts(struct tty_port *port, int raise)
+#endif
 {
 	struct ircomm_tty_cb *self = container_of(port, struct ircomm_tty_cb,
 			port);
@@ -132,7 +137,11 @@ static void ircomm_port_raise_dtr_rts(struct tty_port *port, int raise)
 	ircomm_param_request(self, IRCOMM_DTE, TRUE);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
+static bool ircomm_port_carrier_raised(struct tty_port *port)
+#else
 static int ircomm_port_carrier_raised(struct tty_port *port)
+#endif
 {
 	struct ircomm_tty_cb *self = container_of(port, struct ircomm_tty_cb,
 			port);

@@ -28,6 +28,7 @@
 
 #include <linux/types.h>
 #include <linux/module.h>
+#include <linux/net.h>
 
 #include <asm/unaligned.h>
 #include <asm/byteorder.h>

@@ -26,6 +26,7 @@
 #include <linux/string.h>
 #include <linux/socket.h>
 #include <linux/module.h>
+#include <linux/net.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irias_object.h>
