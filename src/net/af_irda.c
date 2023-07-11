@@ -2611,7 +2611,9 @@ static const struct proto_ops irda_stream_ops = {
 	.sendmsg =	irda_sendmsg,
 	.recvmsg =	irda_recvmsg_stream,
 	.mmap =		sock_no_mmap,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
 	.sendpage =	sock_no_sendpage,
+#endif
 };
 
 static const struct proto_ops irda_seqpacket_ops = {
@@ -2636,7 +2638,9 @@ static const struct proto_ops irda_seqpacket_ops = {
 	.sendmsg =	irda_sendmsg,
 	.recvmsg =	irda_recvmsg_dgram,
 	.mmap =		sock_no_mmap,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
 	.sendpage =	sock_no_sendpage,
+#endif
 };
 
 static const struct proto_ops irda_dgram_ops = {
@@ -2661,7 +2665,9 @@ static const struct proto_ops irda_dgram_ops = {
 	.sendmsg =	irda_sendmsg_dgram,
 	.recvmsg =	irda_recvmsg_dgram,
 	.mmap =		sock_no_mmap,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
 	.sendpage =	sock_no_sendpage,
+#endif
 };
 
 #ifdef CONFIG_IRDA_ULTRA
@@ -2687,7 +2693,9 @@ static const struct proto_ops irda_ultra_ops = {
 	.sendmsg =	irda_sendmsg_ultra,
 	.recvmsg =	irda_recvmsg_dgram,
 	.mmap =		sock_no_mmap,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
 	.sendpage =	sock_no_sendpage,
+#endif
 };
 #endif /* CONFIG_IRDA_ULTRA */
 
