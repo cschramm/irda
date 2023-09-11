@@ -212,11 +212,7 @@ static int  smsc_ircc_net_open(struct net_device *dev);
 static int  smsc_ircc_net_close(struct net_device *dev);
 static int  smsc_ircc_net_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 #if SMSC_IRCC2_C_NET_TIMEOUT
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
-static void smsc_ircc_timeout(struct net_device *dev);
-#else
 static void smsc_ircc_timeout(struct net_device *dev, unsigned int txqueue);
-#endif
 #endif
 static int smsc_ircc_is_receiving(struct smsc_ircc_cb *self);
 static void smsc_ircc_probe_transceiver(struct smsc_ircc_cb *self);
@@ -856,11 +852,7 @@ static int smsc_ircc_net_ioctl(struct net_device *dev, struct ifreq *rq, int cmd
  *
  */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
-static void smsc_ircc_timeout(struct net_device *dev)
-#else
 static void smsc_ircc_timeout(struct net_device *dev, unsigned int txqueue)
-#endif
 {
 	struct smsc_ircc_cb *self = netdev_priv(dev);
 	unsigned long flags;

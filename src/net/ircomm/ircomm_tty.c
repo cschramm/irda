@@ -59,18 +59,10 @@ static int  ircomm_tty_open(struct tty_struct *tty, struct file *filp);
 static void ircomm_tty_close(struct tty_struct * tty, struct file *filp);
 static int  ircomm_tty_write(struct tty_struct * tty,
 			     const unsigned char *buf, int count);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-static int  ircomm_tty_write_room(struct tty_struct *tty);
-#else
 static unsigned int  ircomm_tty_write_room(struct tty_struct *tty);
-#endif
 static void ircomm_tty_throttle(struct tty_struct *tty);
 static void ircomm_tty_unthrottle(struct tty_struct *tty);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-static int  ircomm_tty_chars_in_buffer(struct tty_struct *tty);
-#else
 static unsigned int  ircomm_tty_chars_in_buffer(struct tty_struct *tty);
-#endif
 static void ircomm_tty_flush_buffer(struct tty_struct *tty);
 static void ircomm_tty_send_xchar(struct tty_struct *tty, char ch);
 static void ircomm_tty_wait_until_sent(struct tty_struct *tty, int timeout);
@@ -726,11 +718,7 @@ static int ircomm_tty_write(struct tty_struct *tty,
  *    accept for queuing to be written. This number is subject to change as
  *    output buffers get emptied, or if the output flow control is acted.
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-static int ircomm_tty_write_room(struct tty_struct *tty)
-#else
 static unsigned int ircomm_tty_write_room(struct tty_struct *tty)
-#endif
 {
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned long flags;
@@ -863,11 +851,7 @@ static void ircomm_tty_unthrottle(struct tty_struct *tty)
  *    Indicates if there are any data in the buffer
  *
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-static int ircomm_tty_chars_in_buffer(struct tty_struct *tty)
-#else
 static unsigned int ircomm_tty_chars_in_buffer(struct tty_struct *tty)
-#endif
 {
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned long flags;

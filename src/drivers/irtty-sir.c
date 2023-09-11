@@ -218,11 +218,7 @@ static int irtty_do_write(struct sir_dev *dev, const unsigned char *ptr, size_t 
  */
 
 static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-			      char *fp, int count) 
-#else
 			      const char *fp, int count) 
-#endif
 {
 	struct sir_dev *dev;
 	struct sirtty_cb *priv = tty->disc_data;
@@ -559,11 +555,7 @@ static int __init irtty_sir_init(void)
 {
 	int err;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-	if ((err = tty_register_ldisc(N_IRDA, &irda_ldisc)) != 0)
-#else
 	if ((err = tty_register_ldisc(&irda_ldisc)) != 0)
-#endif
 		net_err_ratelimited("IrDA: can't register line discipline (err = %d)\n",
 				    err);
 	return err;
@@ -571,11 +563,7 @@ static int __init irtty_sir_init(void)
 
 static void __exit irtty_sir_cleanup(void) 
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
-	tty_unregister_ldisc(N_IRDA);
-#else
         tty_unregister_ldisc(&irda_ldisc);
-#endif
 }
 
 module_init(irtty_sir_init);

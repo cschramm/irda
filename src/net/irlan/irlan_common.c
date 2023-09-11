@@ -88,22 +88,12 @@ extern struct proc_dir_entry *proc_irda;
 
 static int irlan_seq_open(struct inode *inode, struct file *file);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
-static const struct file_operations irlan_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = irlan_seq_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release,
-};
-#else
 static const struct proc_ops irlan_fops = {
 	.proc_open    = irlan_seq_open,
 	.proc_read    = seq_read,
 	.proc_lseek   = seq_lseek,
 	.proc_release = seq_release,
 };
-#endif
 
 extern struct proc_dir_entry *proc_irda;
 #endif /* CONFIG_PROC_FS */
@@ -235,11 +225,7 @@ static struct irlan_cb __init *irlan_open(__u32 saddr, __u32 daddr)
 		eth_addr[3] = 0x00;
 		get_random_bytes(eth_addr+4, 1);
 		get_random_bytes(eth_addr+5, 1);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
-                dev->dev_addr = eth_addr;
-#else
                 eth_hw_addr_set(dev, eth_addr);
-#endif
 	}
 
 	self->media = MEDIA_802_3;

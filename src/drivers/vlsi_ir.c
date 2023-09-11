@@ -381,22 +381,12 @@ static int vlsi_seq_open(struct inode *inode, struct file *file)
 	);
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
-static const struct file_operations vlsi_proc_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = vlsi_seq_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = single_release,
-};
-#else
 static const struct proc_ops vlsi_proc_fops = {
 	.proc_open    = vlsi_seq_open,
 	.proc_read    = seq_read,
 	.proc_lseek   = seq_lseek,
 	.proc_release = single_release,
 };
-#endif
 
 #define VLSI_PROC_FOPS		(&vlsi_proc_fops)
 
@@ -1372,11 +1362,7 @@ static int vlsi_stop_hw(vlsi_irda_dev_t *idev)
 
 /**************************************************************/
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
-static void vlsi_tx_timeout(struct net_device *ndev)
-#else
 static void vlsi_tx_timeout(struct net_device *ndev, unsigned int txqueue)
-#endif
 {
 	vlsi_irda_dev_t *idev = netdev_priv(ndev);
 

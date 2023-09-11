@@ -422,9 +422,6 @@ static void irlan_check_response_param(struct irlan_cb *self, char *param,
 {
 	__u16 tmp_cpu; /* Temporary value in host order */
 	__u8 *bytes;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
-	int i;
-#endif
 
 	pr_debug("%s(), parm=%s\n", __func__ , param);
 
@@ -510,12 +507,7 @@ static void irlan_check_response_param(struct irlan_cb *self, char *param,
 	if (strcmp(param, "FILTER_ENTRY") == 0) {
 		bytes = value;
 		pr_debug("Ethernet address = %pM\n", bytes);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
-		for (i = 0; i < 6; i++)
-			self->dev->dev_addr[i] = bytes[i];
-#else
                 eth_hw_addr_set(self->dev, bytes);
-#endif
 	}
 }
 
