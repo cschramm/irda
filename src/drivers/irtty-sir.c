@@ -217,8 +217,13 @@ static int irtty_do_write(struct sir_dev *dev, const unsigned char *ptr, size_t 
  * usbserial:	urb-complete-interrupt / softint
  */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
 static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 			      const char *fp, int count) 
+#else
+static void irtty_receive_buf(struct tty_struct *tty, const u8 *cp,
+			      const u8 *fp, size_t count)
+#endif
 {
 	struct sir_dev *dev;
 	struct sirtty_cb *priv = tty->disc_data;
