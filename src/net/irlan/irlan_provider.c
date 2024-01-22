@@ -391,7 +391,7 @@ int irlan_provider_open_ctrl_tsap(struct irlan_cb *self)
 	notify.connect_indication    = irlan_provider_connect_indication;
 	notify.disconnect_indication = irlan_provider_disconnect_indication;
 	notify.instance = self;
-	strlcpy(notify.name, "IrLAN ctrl (p)", sizeof(notify.name));
+	strscpy(notify.name, "IrLAN ctrl (p)", sizeof(notify.name));
 
 	tsap = irttp_open_tsap(LSAP_ANY, 1, &notify);
 	if (!tsap) {

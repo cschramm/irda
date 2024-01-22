@@ -329,7 +329,7 @@ int ircomm_open_lsap(struct ircomm_cb *self)
 	notify.connect_indication    = ircomm_lmp_connect_indication;
 	notify.disconnect_indication = ircomm_lmp_disconnect_indication;
 	notify.instance = self;
-	strlcpy(notify.name, "IrCOMM", sizeof(notify.name));
+	strscpy(notify.name, "IrCOMM", sizeof(notify.name));
 
 	self->lsap = irlmp_open_lsap(LSAP_ANY, &notify, 0);
 	if (!self->lsap) {

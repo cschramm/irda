@@ -260,7 +260,7 @@ static void irlan_client_open_ctrl_tsap(struct irlan_cb *self)
 	notify.connect_confirm       = irlan_client_ctrl_connect_confirm;
 	notify.disconnect_indication = irlan_client_ctrl_disconnect_indication;
 	notify.instance = self;
-	strlcpy(notify.name, "IrLAN ctrl (c)", sizeof(notify.name));
+	strscpy(notify.name, "IrLAN ctrl (c)", sizeof(notify.name));
 
 	tsap = irttp_open_tsap(LSAP_ANY, DEFAULT_INITIAL_CREDIT, &notify);
 	if (!tsap) {

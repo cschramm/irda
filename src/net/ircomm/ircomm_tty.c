@@ -69,7 +69,11 @@ static void ircomm_tty_throttle(struct tty_struct *tty);
 static void ircomm_tty_unthrottle(struct tty_struct *tty);
 static unsigned int  ircomm_tty_chars_in_buffer(struct tty_struct *tty);
 static void ircomm_tty_flush_buffer(struct tty_struct *tty);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0)
 static void ircomm_tty_send_xchar(struct tty_struct *tty, char ch);
+#else
+static void ircomm_tty_send_xchar(struct tty_struct *tty, u8 ch);
+#endif
 static void ircomm_tty_wait_until_sent(struct tty_struct *tty, int timeout);
 static void ircomm_tty_hangup(struct tty_struct *tty);
 static void ircomm_tty_do_softint(struct work_struct *work);
@@ -246,7 +250,7 @@ static int ircomm_tty_startup(struct ircomm_tty_cb *self)
 	notify.disconnect_indication = ircomm_tty_disconnect_indication;
 	notify.connect_confirm       = ircomm_tty_connect_confirm;
 	notify.connect_indication    = ircomm_tty_connect_indication;
-	strlcpy(notify.name, "ircomm_tty", sizeof(notify.name));
+	strscpy(notify.name, "ircomm_tty", sizeof(notify.name));
 	notify.instance = self;
 
 	if (!self->ircomm) {
@@ -959,7 +963,11 @@ static void ircomm_tty_hangup(struct tty_struct *tty)
  *    This routine is used to send a high-priority XON/XOFF character to
  *    the device.
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0)
 static void ircomm_tty_send_xchar(struct tty_struct *tty, char ch)
+#else
+static void ircomm_tty_send_xchar(struct tty_struct *tty, u8 ch)
+#endif
 {
 	pr_debug("%s(), not impl\n", __func__);
 }

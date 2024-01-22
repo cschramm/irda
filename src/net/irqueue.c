@@ -469,7 +469,7 @@ void hashbin_insert(hashbin_t* hashbin, irda_queue_t* entry, long hashv,
 	 */
 	entry->q_hash = hashv;
 	if ( name )
-		strlcpy( entry->q_name, name, sizeof(entry->q_name));
+		strscpy( entry->q_name, name, sizeof(entry->q_name));
 
 	/*
 	 * Insert new entry first

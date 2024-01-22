@@ -66,7 +66,7 @@ void irda_notify_init(notify_t *notify)
 	notify->flow_indication = NULL;
 	notify->status_indication = NULL;
 	notify->instance = NULL;
-	strlcpy(notify->name, "Unknown", sizeof(notify->name));
+	strscpy(notify->name, "Unknown", sizeof(notify->name));
 }
 EXPORT_SYMBOL(irda_notify_init);
 
