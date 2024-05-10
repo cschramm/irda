@@ -132,7 +132,7 @@ struct irlan_client_cb {
 	int unicast_open;
 	int broadcast_open;
 
-	int tx_busy;
+	volatile unsigned long tx_busy;
 	struct sk_buff_head txq; /* Transmit control queue */
 
 	struct iriap_cb *iriap;
