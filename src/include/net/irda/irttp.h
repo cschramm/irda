@@ -120,8 +120,8 @@ struct tsap_cb {
 	struct sk_buff_head tx_queue; /* Frames to be transmitted */
 	struct sk_buff_head rx_queue; /* Received frames */
 	struct sk_buff_head rx_fragments;
-	int tx_queue_lock;
-	int rx_queue_lock;
+	volatile unsigned long tx_queue_lock;
+	volatile unsigned long rx_queue_lock;
 	spinlock_t lock;
 
 	notify_t notify;       /* Callbacks to client layer */

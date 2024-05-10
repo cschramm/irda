@@ -94,8 +94,8 @@ void irda_notify_init(notify_t *notify);
 /* Locking wrapper - Note the inverted logic on irda_lock().
  * Those function basically return false if the lock is already in the
  * position you want to set it. - Jean II */
-#define irda_lock(lock)		(! test_and_set_bit(0, (void *) (lock)))
-#define irda_unlock(lock)	(test_and_clear_bit(0, (void *) (lock)))
+#define irda_lock(lock)		(! test_and_set_bit(0, (lock)))
+#define irda_unlock(lock)	(test_and_clear_bit(0, (lock)))
 
 #endif /* IRMOD_H */
 
