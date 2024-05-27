@@ -827,8 +827,13 @@ out:
  *    Wait for incoming connection
  *
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
 static int irda_accept(struct socket *sock, struct socket *newsock, int flags,
 		       bool kern)
+#else
+static int irda_accept(struct socket *sock, struct socket *newsock,
+		       struct proto_accept_arg *arg)
+#endif
 {
 	struct sock *sk = sock->sk;
 	struct irda_sock *new, *self = irda_sk(sk);
@@ -836,7 +841,11 @@ static int irda_accept(struct socket *sock, struct socket *newsock, int flags,
 	struct sk_buff *skb = NULL;
 	int err;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
 	err = irda_create(sock_net(sk), newsock, sk->sk_protocol, kern);
+#else
+	err = irda_create(sock_net(sk), newsock, sk->sk_protocol, arg->kern);
+#endif
 	if (err)
 		return err;
 
@@ -875,7 +884,11 @@ static int irda_accept(struct socket *sock, struct socket *newsock, int flags,
 
 		/* Non blocking operation */
 		err = -EWOULDBLOCK;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
 		if (flags & O_NONBLOCK)
+#else
+		if (arg->flags & O_NONBLOCK)
+#endif
 			goto out;
 
 		err = wait_event_interruptible(*(sk_sleep(sk)),
