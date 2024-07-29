@@ -27,6 +27,7 @@
 #include <linux/ctype.h>
 #include <linux/sysctl.h>
 #include <linux/init.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>		/* irda_debug */
 #include <net/irda/irlmp.h>
@@ -73,7 +74,11 @@ static int min_lap_keepalive_time = 100;	/* 100us */
 /* For other sysctl, I've no idea of the range. Maybe Dag could help
  * us on that - Jean II */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 static int do_devname(struct ctl_table *table, int write,
+#else
+static int do_devname(const struct ctl_table *table, int write,
+#endif
 		      void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	int ret;
@@ -89,8 +94,11 @@ static int do_devname(struct ctl_table *table, int write,
 	return ret;
 }
 
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 static int do_discovery(struct ctl_table *table, int write,
+#else
+static int do_discovery(const struct ctl_table *table, int write,
+#endif
                     void __user *buffer, size_t *lenp, loff_t *ppos)
 {
        int ret;
