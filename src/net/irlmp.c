@@ -44,7 +44,11 @@
 #include <net/irda/irlmp.h>
 #include <net/irda/irlmp_frame.h>
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 #include <asm/unaligned.h>
+#else
+#include <linux/unaligned.h>
+#endif
 
 static __u8 irlmp_find_free_slsap(void);
 static int irlmp_slsap_inuse(__u8 slsap_sel);

@@ -36,7 +36,11 @@
 #include <linux/version.h>
 
 #include <asm/byteorder.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 #include <asm/unaligned.h>
+#else
+#include <linux/unaligned.h>
+#endif
 
 #include <net/irda/irda.h>
 #include <net/irda/irttp.h>

@@ -52,12 +52,17 @@
 #include <linux/crc32.h>
 #include <linux/kthread.h>
 #include <linux/freezer.h>
+#include <linux/version.h>
 #include <net/irda/irda.h>
 #include <net/irda/irda_device.h>
 #include <net/irda/wrapper.h>
 #include <net/irda/crc.h>
 #include <asm/byteorder.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 #include <asm/unaligned.h>
+#else
+#include <linux/unaligned.h>
+#endif
 
 MODULE_AUTHOR("Stephen Hemminger <shemminger@linux-foundation.org>");
 MODULE_DESCRIPTION("IrDA-USB Dongle Driver for SigmaTel STIr4200");
