@@ -231,7 +231,6 @@ static struct ctl_table irda_table[] = {
 		.extra1		= &min_lap_keepalive_time,
 		.extra2		= &max_lap_keepalive_time
 	},
-	{ }
 };
 
 static struct ctl_table_header *irda_table_header;
@@ -244,7 +243,8 @@ static struct ctl_table_header *irda_table_header;
  */
 int __init irda_sysctl_register(void)
 {
-	irda_table_header = register_net_sysctl(&init_net, "net/irda", irda_table);
+	irda_table_header = register_net_sysctl_sz(&init_net, "net/irda", irda_table,
+                                                   ARRAY_SIZE(irda_table));
 	if (!irda_table_header)
 		return -ENOMEM;
 
