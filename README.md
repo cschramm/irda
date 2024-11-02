@@ -140,7 +140,7 @@ MosChip MCS7780 IrDA-USB dongle. USB bridge based on the MosChip MCS7780 don't c
 
 ### Minimum Linux versions?
 
-5.15. (See kernel-* tags for versions that support older versions of Linux (down to 4.15).)
+6.6. (See kernel-* tags for versions that support older versions of Linux (down to 4.15).)
 
 ### Why?
 

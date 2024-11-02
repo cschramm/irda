@@ -16,7 +16,6 @@
 #include <linux/socket.h>
 #include <linux/irda.h>
 #include <linux/gfp.h>
-#include <linux/version.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
 #include <net/irda/irda.h>
@@ -151,9 +150,7 @@ static struct genl_family irda_nl_family __ro_after_init = {
 	.module = THIS_MODULE,
 	.ops = irda_nl_ops,
 	.n_ops = ARRAY_SIZE(irda_nl_ops),
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
         .resv_start_op = __IRDA_NL_CMD_AFTER_LAST,
-#endif
 };
 
 int __init irda_nl_register(void)

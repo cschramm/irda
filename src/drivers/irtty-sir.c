@@ -34,7 +34,6 @@
 #include <linux/uaccess.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
-#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irda_device.h>
@@ -217,13 +216,8 @@ static int irtty_do_write(struct sir_dev *dev, const unsigned char *ptr, size_t 
  * usbserial:	urb-complete-interrupt / softint
  */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
-static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
-			      const char *fp, int count) 
-#else
 static void irtty_receive_buf(struct tty_struct *tty, const u8 *cp,
 			      const u8 *fp, size_t count)
-#endif
 {
 	struct sir_dev *dev;
 	struct sirtty_cb *priv = tty->disc_data;
@@ -384,9 +378,6 @@ static struct sir_driver sir_tty_drv = {
  *
  */
 static int irtty_ioctl(struct tty_struct *tty,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
-	struct file *file,
-#endif
 	unsigned int cmd, unsigned long arg)
 {
 	struct irtty_info { char name[6]; } info;
@@ -418,11 +409,7 @@ static int irtty_ioctl(struct tty_struct *tty,
 			err = -EFAULT;
 		break;
 	default:
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
-		err = tty_mode_ioctl(tty, file, cmd, arg);
-#else
 		err = tty_mode_ioctl(tty, cmd, arg);
-#endif
 		break;
 	}
 	return err;
@@ -540,9 +527,6 @@ static void irtty_close(struct tty_struct *tty)
 static struct tty_ldisc_ops irda_ldisc = {
 	.num		= N_IRDA,
  	.name		= "irda",
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
-	.flags		= 0,
-#endif
 	.open		= irtty_open,
 	.close		= irtty_close,
 	.read		= NULL,

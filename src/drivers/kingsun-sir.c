@@ -467,11 +467,7 @@ static int kingsun_probe(struct usb_interface *intf,
 
 	ep_in = endpoint->bEndpointAddress;
 	pipe = usb_rcvintpipe(dev, ep_in);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 0)
-	maxp_in = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
-#else
         maxp_in = usb_maxpacket(dev, pipe);
-#endif
 	if (maxp_in > 255 || maxp_in <= 1) {
 		dev_err(&intf->dev,
 			"endpoint 0 has max packet size %d not in range\n",
@@ -488,11 +484,7 @@ static int kingsun_probe(struct usb_interface *intf,
 
 	ep_out = endpoint->bEndpointAddress;
 	pipe = usb_sndintpipe(dev, ep_out);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 0)
-	maxp_out = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
-#else
         maxp_out = usb_maxpacket(dev, pipe);
-#endif
 
 	/* Allocate network device container. */
 	net = alloc_irdadev(sizeof(*kingsun));

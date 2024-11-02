@@ -33,7 +33,6 @@
 #include <linux/termios.h>
 #include <linux/timer.h>
 #include <linux/tty.h>		/* struct tty_struct */
-#include <linux/version.h>
 
 #include <net/irda/irias_object.h>
 #include <net/irda/ircomm_core.h>
@@ -110,11 +109,7 @@ int ircomm_tty_tiocmset(struct tty_struct *tty, unsigned int set,
 int ircomm_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
 		     unsigned long arg);
 void ircomm_tty_set_termios(struct tty_struct *tty,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
-			    struct ktermios *old_termios);
-#else
 			    const struct ktermios *old_termios);
-#endif
 
 #endif
 

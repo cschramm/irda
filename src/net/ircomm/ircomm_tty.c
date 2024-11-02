@@ -57,13 +57,8 @@ static int ircomm_tty_install(struct tty_driver *driver,
 		struct tty_struct *tty);
 static int  ircomm_tty_open(struct tty_struct *tty, struct file *filp);
 static void ircomm_tty_close(struct tty_struct * tty, struct file *filp);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
-static int  ircomm_tty_write(struct tty_struct * tty,
-			     const unsigned char *buf, int count);
-#else
 static ssize_t ircomm_tty_write(struct tty_struct * tty,
 			        const unsigned char *buf, size_t count);
-#endif
 static unsigned int  ircomm_tty_write_room(struct tty_struct *tty);
 static void ircomm_tty_throttle(struct tty_struct *tty);
 static void ircomm_tty_unthrottle(struct tty_struct *tty);
@@ -117,11 +112,7 @@ static const struct tty_operations ops = {
 #endif /* CONFIG_PROC_FS */
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
 static void ircomm_port_raise_dtr_rts(struct tty_port *port, bool raise)
-#else
-static void ircomm_port_raise_dtr_rts(struct tty_port *port, int raise)
-#endif
 {
 	struct ircomm_tty_cb *self = container_of(port, struct ircomm_tty_cb,
 			port);
@@ -138,11 +129,7 @@ static void ircomm_port_raise_dtr_rts(struct tty_port *port, int raise)
 	ircomm_param_request(self, IRCOMM_DTE, TRUE);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
 static bool ircomm_port_carrier_raised(struct tty_port *port)
-#else
-static int ircomm_port_carrier_raised(struct tty_port *port)
-#endif
 {
 	struct ircomm_tty_cb *self = container_of(port, struct ircomm_tty_cb,
 			port);
@@ -594,13 +581,8 @@ put:
  *    space. This routine will return the number of characters actually
  *    accepted for writing. This routine is mandatory.
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
-static int ircomm_tty_write(struct tty_struct *tty,
-			    const unsigned char *buf, int count)
-#else
 static ssize_t ircomm_tty_write(struct tty_struct *tty,
 				const unsigned char *buf, size_t count)
-#endif
 {
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned long flags;
@@ -609,11 +591,7 @@ static ssize_t ircomm_tty_write(struct tty_struct *tty,
 	int len = 0;
 	int size;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
-	pr_debug("%s(), count=%d, hw_stopped=%d\n", __func__ , count,
-#else
 	pr_debug("%s(), count=%zu, hw_stopped=%d\n", __func__ , count,
-#endif
 		 tty->hw_stopped);
 
 	IRDA_ASSERT(self != NULL, return -1;);
