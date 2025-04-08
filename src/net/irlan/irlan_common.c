@@ -265,8 +265,8 @@ static void __irlan_close(struct irlan_cb *self)
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRLAN_MAGIC, return;);
 
-	del_timer_sync(&self->watchdog_timer);
-	del_timer_sync(&self->client.kick_timer);
+	timer_delete_sync(&self->watchdog_timer);
+	timer_delete_sync(&self->client.kick_timer);
 
 	/* Close all open connections and remove TSAPs */
 	irlan_close_tsaps(self);
@@ -319,7 +319,7 @@ static void irlan_connect_indication(void *instance, void *sap,
 
 	pr_debug("%s: We are now connected!\n", __func__);
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/* If you want to pass the skb to *both* state machines, you will
 	 * need to skb_clone() it, so that you don't free it twice.
@@ -362,7 +362,7 @@ static void irlan_connect_confirm(void *instance, void *sap,
 	/* TODO: we could set the MTU depending on the max_sdu_size */
 
 	pr_debug("%s: We are now connected!\n", __func__);
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/*
 	 * Data channel is open, so we are now allowed to configure the remote

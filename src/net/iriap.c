@@ -230,7 +230,7 @@ static void __iriap_close(struct iriap_cb *self)
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IAS_MAGIC, return;);
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	if (self->request_skb)
 		dev_kfree_skb(self->request_skb);
@@ -312,7 +312,7 @@ static void iriap_disconnect_indication(void *instance, void *sap,
 
 	IRDA_ASSERT(iriap != NULL, return;);
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/* Not needed */
 	if (skb)
@@ -762,7 +762,7 @@ static void iriap_connect_confirm(void *instance, void *sap,
 	self->max_data_size = max_seg_size;
 	self->max_header_size = max_header_size;
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	iriap_do_client_event(self, IAP_LM_CONNECT_CONFIRM, skb);
 

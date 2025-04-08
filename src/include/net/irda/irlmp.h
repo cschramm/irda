@@ -289,7 +289,7 @@ static inline void irlmp_listen(struct lsap_cb *self)
 	self->lap = NULL;
 	self->lsap_state = LSAP_DISCONNECTED;
 	/* Started when we received the LM_CONNECT_INDICATION */
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 }
 
 #endif

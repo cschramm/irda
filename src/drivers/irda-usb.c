@@ -1247,7 +1247,7 @@ static int irda_usb_net_close(struct net_device *netdev)
 	netif_stop_queue(netdev);
 
 	/* Kill defered Rx URB */
-	del_timer(&self->rx_defer_timer);
+	timer_delete(&self->rx_defer_timer);
 
 	/* Deallocate all the Rx path buffers (URBs and skb) */
 	for (i = 0; i < self->max_rx_urb; i++) {
@@ -1805,7 +1805,7 @@ static void irda_usb_disconnect(struct usb_interface *intf)
 	self->present = 0;
 
 	/* Kill defered Rx URB */
-	del_timer(&self->rx_defer_timer);
+	timer_delete(&self->rx_defer_timer);
 
 	/* We need to have irq enabled to unlink the URBs. That's OK,
 	 * at this point the Tx path is gone - Jean II */

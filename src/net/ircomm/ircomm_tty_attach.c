@@ -162,7 +162,7 @@ void ircomm_tty_detach_cable(struct ircomm_tty_cb *self)
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_TTY_MAGIC, return;);
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/* Remove discovery handler */
 	if (self->ckey) {
@@ -548,7 +548,7 @@ void ircomm_tty_link_established(struct ircomm_tty_cb *self)
 	if (!tty)
 		return;
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/*
 	 * IrCOMM link is now up, and if we are not using hardware
@@ -688,7 +688,7 @@ static int ircomm_tty_state_idle(struct ircomm_tty_cb *self,
 		ircomm_tty_next_state(self, IRCOMM_TTY_QUERY_PARAMETERS);
 		break;
 	case IRCOMM_TTY_CONNECT_INDICATION:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 
 		/* Accept connection */
 		ircomm_connect_response(self->ircomm, NULL);
@@ -754,7 +754,7 @@ static int ircomm_tty_state_search(struct ircomm_tty_cb *self,
 		ircomm_tty_start_watchdog_timer(self, 3*HZ);
 		break;
 	case IRCOMM_TTY_CONNECT_INDICATION:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 		ircomm_tty_ias_unregister(self);
 
 		/* Accept connection */
@@ -821,7 +821,7 @@ static int ircomm_tty_state_query_parameters(struct ircomm_tty_cb *self,
 		ircomm_tty_start_watchdog_timer(self, 3*HZ);
 		break;
 	case IRCOMM_TTY_CONNECT_INDICATION:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 		ircomm_tty_ias_unregister(self);
 
 		/* Accept connection */
@@ -870,7 +870,7 @@ static int ircomm_tty_state_query_lsap_sel(struct ircomm_tty_cb *self,
 		ircomm_tty_start_watchdog_timer(self, 3*HZ);
 		break;
 	case IRCOMM_TTY_CONNECT_INDICATION:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 		ircomm_tty_ias_unregister(self);
 
 		/* Accept connection */
@@ -906,7 +906,7 @@ static int ircomm_tty_state_setup(struct ircomm_tty_cb *self,
 
 	switch (event) {
 	case IRCOMM_TTY_CONNECT_CONFIRM:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 		ircomm_tty_ias_unregister(self);
 
 		/*
@@ -918,7 +918,7 @@ static int ircomm_tty_state_setup(struct ircomm_tty_cb *self,
 		ircomm_tty_next_state(self, IRCOMM_TTY_READY);
 		break;
 	case IRCOMM_TTY_CONNECT_INDICATION:
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 		ircomm_tty_ias_unregister(self);
 
 		/* Accept connection */

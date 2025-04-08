@@ -684,7 +684,7 @@ static int irlap_state_reply(struct irlap_cb *self, IRLAP_EVENT event,
 		IRDA_ASSERT(info != NULL, return -1;);
 		/* Last frame? */
 		if (info->s == 0xff) {
-			del_timer(&self->query_timer);
+			timer_delete(&self->query_timer);
 
 			/* info->log.condition = REMOTE; */
 
@@ -867,7 +867,7 @@ static int irlap_state_setup(struct irlap_cb *self, IRLAP_EVENT event,
 		 *  (both have sent a SNRM command!)
 		 */
 		if (info &&(info->daddr > self->saddr)) {
-			del_timer(&self->final_timer);
+			timer_delete(&self->final_timer);
 			irlap_initiate_connection_state(self);
 
 			IRDA_ASSERT(self->netdev != NULL, return -1;);
@@ -896,7 +896,7 @@ static int irlap_state_setup(struct irlap_cb *self, IRLAP_EVENT event,
 		break;
 	case RECV_UA_RSP:
 		/* Stop F-timer */
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 
 		/* Initiate connection state */
 		irlap_initiate_connection_state(self);
@@ -938,7 +938,7 @@ static int irlap_state_setup(struct irlap_cb *self, IRLAP_EVENT event,
 		break;
 	case RECV_DM_RSP:     /* FALLTHROUGH */
 	case RECV_DISC_CMD:
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 		irlap_next_state(self, LAP_NDM);
 
 		irlap_disconnect_indication(self, LAP_DISC_INDICATION);
@@ -1102,7 +1102,7 @@ static int irlap_state_xmit_p(struct irlap_cb *self, IRLAP_EVENT event,
 		irlap_next_state(self, LAP_NRM_P);
 		break;
 	case DISCONNECT_REQUEST:
-		del_timer(&self->poll_timer);
+		timer_delete(&self->poll_timer);
 		irlap_wait_min_turn_around(self, &self->qos_tx);
 		irlap_send_disc_frame(self);
 		irlap_flush_all_queues(self);
@@ -1140,7 +1140,7 @@ static int irlap_state_pclose(struct irlap_cb *self, IRLAP_EVENT event,
 	switch (event) {
 	case RECV_UA_RSP: /* FALLTHROUGH */
 	case RECV_DM_RSP:
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 
 		/* Set new link parameters */
 		irlap_apply_default_connection_parameters(self);
@@ -1247,7 +1247,7 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 				irlap_data_indication(self, skb, FALSE);
 			} else {
 				/* No longer waiting for pf */
-				del_timer(&self->final_timer);
+				timer_delete(&self->final_timer);
 
 				irlap_wait_min_turn_around(self, &self->qos_tx);
 
@@ -1385,14 +1385,14 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 		 */
 		if ((nr_status == NR_INVALID) || (ns_status == NS_INVALID)) {
 			if (info->pf) {
-				del_timer(&self->final_timer);
+				timer_delete(&self->final_timer);
 
 				irlap_next_state(self, LAP_RESET_WAIT);
 
 				irlap_disconnect_indication(self, LAP_RESET_INDICATION);
 				self->xmitflag = TRUE;
 			} else {
-				del_timer(&self->final_timer);
+				timer_delete(&self->final_timer);
 
 				irlap_disconnect_indication(self, LAP_RESET_INDICATION);
 
@@ -1410,7 +1410,7 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 			irlap_data_indication(self, skb, TRUE);
 			irlap_next_state(self, LAP_NRM_P);
 		} else {
-			del_timer(&self->final_timer);
+			timer_delete(&self->final_timer);
 			irlap_data_indication(self, skb, TRUE);
 			irlap_next_state(self, LAP_XMIT_P);
 			pr_debug("%s: RECV_UI_FRAME: next state %s\n",
@@ -1426,7 +1426,7 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 		self->remote_busy = FALSE;
 
 		/* Stop final timer */
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 
 		/*
 		 *  Nr as expected?
@@ -1480,7 +1480,7 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 		IRDA_ASSERT(info != NULL, return -1;);
 
 		/* Stop final timer */
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 		self->remote_busy = TRUE;
 
 		/* Update Nr received */
@@ -1491,7 +1491,7 @@ static int irlap_state_nrm_p(struct irlap_cb *self, IRLAP_EVENT event,
 		irlap_start_poll_timer(self, self->poll_timeout);
 		break;
 	case RECV_FRMR_RSP:
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 		self->xmitflag = TRUE;
 		irlap_next_state(self, LAP_RESET_WAIT);
 		irlap_reset_indication(self);
@@ -1655,7 +1655,7 @@ static int irlap_state_reset(struct irlap_cb *self, IRLAP_EVENT event,
 
 	switch (event) {
 	case RECV_DISC_CMD:
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 
 		irlap_apply_default_connection_parameters(self);
 
@@ -1666,7 +1666,7 @@ static int irlap_state_reset(struct irlap_cb *self, IRLAP_EVENT event,
 
 		break;
 	case RECV_UA_RSP:
-		del_timer(&self->final_timer);
+		timer_delete(&self->final_timer);
 
 		/* Initiate connection state */
 		irlap_initiate_connection_state(self);
@@ -1930,7 +1930,7 @@ static int irlap_state_nrm_s(struct irlap_cb *self, IRLAP_EVENT event,
 				{
 					self->ack_required = TRUE;
 
-					del_timer(&self->wd_timer);
+					timer_delete(&self->wd_timer);
 
 					irlap_next_state(self, LAP_XMIT_S);
 				} else {
@@ -2031,7 +2031,7 @@ static int irlap_state_nrm_s(struct irlap_cb *self, IRLAP_EVENT event,
 			{
 				irlap_data_indication(self, skb, TRUE);
 
-				del_timer(&self->wd_timer);
+				timer_delete(&self->wd_timer);
 
 				irlap_next_state(self, LAP_XMIT_S);
 			} else {
@@ -2063,7 +2063,7 @@ static int irlap_state_nrm_s(struct irlap_cb *self, IRLAP_EVENT event,
 
 				/* Update Nr received */
 				irlap_update_nr_received(self, info->nr);
-				del_timer(&self->wd_timer);
+				timer_delete(&self->wd_timer);
 
 				irlap_wait_min_turn_around(self, &self->qos_tx);
 				irlap_next_state(self, LAP_XMIT_S);
@@ -2108,7 +2108,7 @@ static int irlap_state_nrm_s(struct irlap_cb *self, IRLAP_EVENT event,
 	case RECV_SNRM_CMD:
 		/* SNRM frame is not allowed to contain an I-field */
 		if (!info) {
-			del_timer(&self->wd_timer);
+			timer_delete(&self->wd_timer);
 			pr_debug("%s(), received SNRM cmd\n", __func__);
 			irlap_next_state(self, LAP_RESET_CHECK);
 
@@ -2174,7 +2174,7 @@ static int irlap_state_nrm_s(struct irlap_cb *self, IRLAP_EVENT event,
 		irlap_wait_min_turn_around(self, &self->qos_tx);
 		irlap_send_ua_response_frame(self, NULL);
 
-		del_timer(&self->wd_timer);
+		timer_delete(&self->wd_timer);
 		irlap_flush_all_queues(self);
 		/* Set default link parameters */
 		irlap_apply_default_connection_parameters(self);
@@ -2227,7 +2227,7 @@ static int irlap_state_sclose(struct irlap_cb *self, IRLAP_EVENT event,
 		irlap_wait_min_turn_around(self, &self->qos_tx);
 		irlap_send_ua_response_frame(self, NULL);
 
-		del_timer(&self->wd_timer);
+		timer_delete(&self->wd_timer);
 		/* Set default link parameters */
 		irlap_apply_default_connection_parameters(self);
 
@@ -2245,7 +2245,7 @@ static int irlap_state_sclose(struct irlap_cb *self, IRLAP_EVENT event,
 		/* Always switch state before calling upper layers */
 		irlap_next_state(self, LAP_NDM);
 
-		del_timer(&self->wd_timer);
+		timer_delete(&self->wd_timer);
 		irlap_apply_default_connection_parameters(self);
 
 		irlap_disconnect_indication(self, LAP_DISC_INDICATION);
@@ -2263,7 +2263,7 @@ static int irlap_state_sclose(struct irlap_cb *self, IRLAP_EVENT event,
 		 * with pf=1 shall restart the wd-timer and resend the rd:rsp
 		 */
 		if (info != NULL  &&  info->pf) {
-			del_timer(&self->wd_timer);
+			timer_delete(&self->wd_timer);
 			irlap_wait_min_turn_around(self, &self->qos_tx);
 			irlap_send_rd_frame(self);
 			irlap_start_wd_timer(self, self->wd_timeout);

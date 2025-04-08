@@ -163,7 +163,7 @@ int irda_device_is_receiving(struct net_device *dev)
 
 static void __irda_task_delete(struct irda_task *task)
 {
-	del_timer(&task->timer);
+	timer_delete(&task->timer);
 
 	kfree(task);
 }
@@ -212,7 +212,7 @@ static int irda_task_kick(struct irda_task *task)
 
 	/* Check if we are finished */
 	if (task->state == IRDA_TASK_DONE) {
-		del_timer(&task->timer);
+		timer_delete(&task->timer);
 
 		/* Do post processing */
 		if (task->finished)
@@ -225,7 +225,7 @@ static int irda_task_kick(struct irda_task *task)
 				task->parent->state = IRDA_TASK_CHILD_DONE;
 
 				/* Stop timer now that we are here */
-				del_timer(&task->parent->timer);
+				timer_delete(&task->parent->timer);
 
 				/* Kick parent task */
 				irda_task_kick(task->parent);

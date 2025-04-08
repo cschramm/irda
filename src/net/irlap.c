@@ -185,14 +185,14 @@ static void __irlap_close(struct irlap_cb *self)
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
 
 	/* Stop timers */
-	del_timer(&self->slot_timer);
-	del_timer(&self->query_timer);
-	del_timer(&self->discovery_timer);
-	del_timer(&self->final_timer);
-	del_timer(&self->poll_timer);
-	del_timer(&self->wd_timer);
-	del_timer(&self->backoff_timer);
-	del_timer(&self->media_busy_timer);
+	timer_delete(&self->slot_timer);
+	timer_delete(&self->query_timer);
+	timer_delete(&self->discovery_timer);
+	timer_delete(&self->final_timer);
+	timer_delete(&self->poll_timer);
+	timer_delete(&self->wd_timer);
+	timer_delete(&self->backoff_timer);
+	timer_delete(&self->media_busy_timer);
 
 	irlap_flush_all_queues(self);
 

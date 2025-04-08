@@ -478,7 +478,7 @@ static void __irttp_close_tsap(struct tsap_cb *self)
 
 	irttp_flush_queues(self);
 
-	del_timer(&self->todo_timer);
+	timer_delete(&self->todo_timer);
 
 	/* This one won't be cleaned up if we are disconnect_pend + close_pend
 	 * and we receive a disconnect_indication */

@@ -113,7 +113,7 @@ static int do_discovery(const struct ctl_table *table, int write,
        if (sysctl_discovery)
 	       irlmp_start_discovery_timer(irlmp, sysctl_discovery_timeout*HZ);
        else
-	       del_timer_sync(&irlmp->discovery_timer);
+	       timer_delete_sync(&irlmp->discovery_timer);
 
        return ret;
 }

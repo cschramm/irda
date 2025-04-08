@@ -97,7 +97,7 @@ void irlap_start_mbusy_timer(struct irlap_cb *self, int timeout)
 void irlap_stop_mbusy_timer(struct irlap_cb *self)
 {
 	/* If timer is activated, kill it! */
-	del_timer(&self->media_busy_timer);
+	timer_delete(&self->media_busy_timer);
 
 	/* If we are in NDM, there is a bunch of events in LAP that
 	 * that be pending due to the media_busy condition, such as
@@ -129,7 +129,7 @@ void irlmp_start_idle_timer(struct lap_cb *self, int timeout)
 void irlmp_stop_idle_timer(struct lap_cb *self)
 {
 	/* If timer is activated, kill it! */
-	del_timer(&self->idle_timer);
+	timer_delete(&self->idle_timer);
 }
 
 /*

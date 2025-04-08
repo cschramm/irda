@@ -136,7 +136,7 @@ void irlmp_cleanup(void)
 	IRDA_ASSERT(irlmp != NULL, return;);
 	IRDA_ASSERT(irlmp->magic == LMP_MAGIC, return;);
 
-	del_timer(&irlmp->discovery_timer);
+	timer_delete(&irlmp->discovery_timer);
 
 	hashbin_delete(irlmp->links, (FREE_FUNC) kfree);
 	hashbin_delete(irlmp->unconnected_lsaps, (FREE_FUNC) kfree);
@@ -218,7 +218,7 @@ static void __irlmp_close_lsap(struct lsap_cb *self)
 	 *  Set some of the variables to preset values
 	 */
 	self->magic = 0;
-	del_timer(&self->watchdog_timer); /* Important! */
+	timer_delete(&self->watchdog_timer); /* Important! */
 
 	if (self->conn_skb)
 		dev_kfree_skb(self->conn_skb);
@@ -357,7 +357,7 @@ void irlmp_unregister_link(__u32 saddr)
 		irlmp_expire_discoveries(irlmp->cachelog, link->saddr, TRUE);
 
 		/* Final cleanup */
-		del_timer(&link->idle_timer);
+		timer_delete(&link->idle_timer);
 		link->magic = 0;
 		hashbin_delete(link->lsaps, (FREE_FUNC) __irlmp_close_lsap);
 		kfree(link);

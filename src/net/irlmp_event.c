@@ -581,7 +581,7 @@ static int irlmp_state_connect(struct lsap_cb *self, IRLMP_EVENT event,
 		irlmp_send_lcf_pdu(self->lap, self->dlsap_sel,
 				   self->slsap_sel, CONNECT_CNF, skb);
 
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 
 		irlmp_next_lsap_state(self, LSAP_DATA_TRANSFER_READY);
 		break;
@@ -778,7 +778,7 @@ static int irlmp_state_setup(struct lsap_cb *self, IRLMP_EVENT event,
 	case LM_CONNECT_CONFIRM:
 		irlmp_next_lsap_state(self, LSAP_DATA_TRANSFER_READY);
 
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 
 		irlmp_connect_confirm(self, skb);
 		break;
@@ -801,7 +801,7 @@ static int irlmp_state_setup(struct lsap_cb *self, IRLMP_EVENT event,
 	case LM_LAP_DISCONNECT_INDICATION:
 		irlmp_next_lsap_state(self, LSAP_DISCONNECTED);
 
-		del_timer(&self->watchdog_timer);
+		timer_delete(&self->watchdog_timer);
 
 		IRDA_ASSERT(self->lap != NULL, return -1;);
 		IRDA_ASSERT(self->lap->magic == LMP_LAP_MAGIC, return -1;);
@@ -869,7 +869,7 @@ static int irlmp_state_setup_pend(struct lsap_cb *self, IRLMP_EVENT event,
 		irlmp_disconnect_indication(self, LM_CONNECT_FAILURE, NULL);
 		break;
 	case LM_LAP_DISCONNECT_INDICATION: /* LS_Disconnect.indication */
-		del_timer( &self->watchdog_timer);
+		timer_delete( &self->watchdog_timer);
 
 		irlmp_next_lsap_state(self, LSAP_DISCONNECTED);
 

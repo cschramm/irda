@@ -2520,7 +2520,7 @@ bed:
 			      (self->cachedaddr != 0 || self->errno == -ETIME));
 
 			/* If watchdog is still activated, kill it! */
-			del_timer(&(self->watchdog));
+			timer_delete(&(self->watchdog));
 
 			pr_debug("%s(), ...waking up !\n", __func__);
 

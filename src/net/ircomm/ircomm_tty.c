@@ -881,7 +881,7 @@ static void ircomm_tty_shutdown(struct ircomm_tty_cb *self)
 
 	spin_lock_irqsave(&self->spinlock, flags);
 
-	del_timer(&self->watchdog_timer);
+	timer_delete(&self->watchdog_timer);
 
 	/* Free parameter buffer */
 	if (self->ctrl_skb) {

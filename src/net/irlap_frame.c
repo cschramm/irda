@@ -759,7 +759,7 @@ void irlap_send_data_primary_poll(struct irlap_cb *self, struct sk_buff *skb)
 	int transmission_time;
 
 	/* Stop P timer */
-	del_timer(&self->poll_timer);
+	timer_delete(&self->poll_timer);
 
 	/* Is this reliable or unreliable data? */
 	if (skb->data[1] == I_FRAME) {
