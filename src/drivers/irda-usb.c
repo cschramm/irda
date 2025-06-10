@@ -955,7 +955,11 @@ done:
  */
 static void irda_usb_rx_defer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct irda_usb_cb *self = from_timer(self, t, rx_defer_timer);
+#else
+	struct irda_usb_cb *self = timer_container_of(self, t, rx_defer_timer);
+#endif
 	struct urb *urb = self->rx_defer_timer_urb;
 	struct sk_buff *skb = (struct sk_buff *) urb->context;
 	struct urb *next_urb;

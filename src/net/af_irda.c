@@ -434,7 +434,11 @@ static void irda_discovery_timeout(struct timer_list *t)
 {
 	struct irda_sock *self;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	self = from_timer(self, t, watchdog);
+#else
+	self = timer_container_of(self, t, watchdog);
+#endif
 	BUG_ON(self == NULL);
 
 	/* Nothing for the caller */

@@ -29,6 +29,7 @@
 
 #include <linux/init.h>
 #include <linux/sched.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irlmp.h>
@@ -599,7 +600,11 @@ static void ircomm_tty_start_watchdog_timer(struct ircomm_tty_cb *self,
  */
 static void ircomm_tty_watchdog_timer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct ircomm_tty_cb *self = from_timer(self, t, watchdog_timer);
+#else
+	struct ircomm_tty_cb *self = timer_container_of(self, t, watchdog_timer);
+#endif
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_TTY_MAGIC, return;);

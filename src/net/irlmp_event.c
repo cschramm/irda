@@ -25,6 +25,7 @@
  ********************************************************************/
 
 #include <linux/kernel.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/timer.h>
@@ -176,9 +177,13 @@ void irlmp_discovery_timer_expired(struct timer_list *t)
 	irlmp_start_discovery_timer(irlmp, sysctl_discovery_timeout * HZ);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
+#define timer_container_of from_timer
+#endif
+
 void irlmp_watchdog_timer_expired(struct timer_list *t)
 {
-	struct lsap_cb *self = from_timer(self, t, watchdog_timer);
+	struct lsap_cb *self = timer_container_of(self, t, watchdog_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LMP_LSAP_MAGIC, return;);
@@ -188,7 +193,7 @@ void irlmp_watchdog_timer_expired(struct timer_list *t)
 
 void irlmp_idle_timer_expired(struct timer_list *t)
 {
-	struct lap_cb *self = from_timer(self, t, idle_timer);
+	struct lap_cb *self = timer_container_of(self, t, idle_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LMP_LAP_MAGIC, return;);

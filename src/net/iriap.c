@@ -954,7 +954,11 @@ void iriap_call_indication(struct iriap_cb *self, struct sk_buff *skb)
  */
 static void iriap_watchdog_timer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct iriap_cb *self = from_timer(self, t, watchdog_timer);
+#else
+	struct iriap_cb *self = timer_container_of(self, t, watchdog_timer);
+#endif
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IAS_MAGIC, return;);

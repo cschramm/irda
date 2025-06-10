@@ -167,7 +167,11 @@ static inline void irttp_start_todo_timer(struct tsap_cb *self, int timeout)
  */
 static void irttp_todo_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct tsap_cb *self = from_timer(self, t, todo_timer);
+#else
+	struct tsap_cb *self = timer_container_of(self, t, todo_timer);
+#endif
 
 	/* Check that we still exist */
 	if (!self || self->magic != TTP_TSAP_MAGIC)

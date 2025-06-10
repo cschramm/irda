@@ -71,7 +71,11 @@ static void irlan_client_open_ctrl_tsap(struct irlan_cb *self);
 
 static void irlan_client_kick_timer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct irlan_cb *self = from_timer(self, t, client.kick_timer);
+#else
+	struct irlan_cb *self = timer_container_of(self, t, client.kick_timer);
+#endif
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRLAN_MAGIC, return;);

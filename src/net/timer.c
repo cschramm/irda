@@ -25,6 +25,7 @@
  ********************************************************************/
 
 #include <linux/delay.h>
+#include <linux/version.h>
 
 #include <net/irda/timer.h>
 #include <net/irda/irda.h>
@@ -132,6 +133,10 @@ void irlmp_stop_idle_timer(struct lap_cb *self)
 	timer_delete(&self->idle_timer);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
+#define timer_container_of from_timer
+#endif
+
 /*
  * Function irlap_slot_timer_expired (data)
  *
@@ -140,7 +145,7 @@ void irlmp_stop_idle_timer(struct lap_cb *self)
  */
 static void irlap_slot_timer_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, slot_timer);
+	struct irlap_cb *self = timer_container_of(self, t, slot_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
@@ -156,7 +161,7 @@ static void irlap_slot_timer_expired(struct timer_list *t)
  */
 static void irlap_query_timer_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, query_timer);
+	struct irlap_cb *self = timer_container_of(self, t, query_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
@@ -172,7 +177,7 @@ static void irlap_query_timer_expired(struct timer_list *t)
  */
 static void irlap_final_timer_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, final_timer);
+	struct irlap_cb *self = timer_container_of(self, t, final_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
@@ -188,7 +193,7 @@ static void irlap_final_timer_expired(struct timer_list *t)
  */
 static void irlap_wd_timer_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, wd_timer);
+	struct irlap_cb *self = timer_container_of(self, t, wd_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
@@ -204,7 +209,7 @@ static void irlap_wd_timer_expired(struct timer_list *t)
  */
 static void irlap_backoff_timer_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, backoff_timer);
+	struct irlap_cb *self = timer_container_of(self, t, backoff_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);
@@ -220,7 +225,7 @@ static void irlap_backoff_timer_expired(struct timer_list *t)
  */
 static void irlap_media_busy_expired(struct timer_list *t)
 {
-	struct irlap_cb *self = from_timer(self, t, media_busy_timer);
+	struct irlap_cb *self = timer_container_of(self, t, media_busy_timer);
 
 	IRDA_ASSERT(self != NULL, return;);
 

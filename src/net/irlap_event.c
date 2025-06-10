@@ -30,6 +30,7 @@
 #include <linux/delay.h>
 #include <linux/skbuff.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 
 #include <net/irda/irda.h>
 #include <net/irda/irlap_event.h>
@@ -165,7 +166,11 @@ static int (*state[])(struct irlap_cb *self, IRLAP_EVENT event,
  */
 static void irlap_poll_timer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct irlap_cb *self = from_timer(self, t, poll_timer);
+#else
+	struct irlap_cb *self = timer_container_of(self, t, poll_timer);
+#endif
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == LAP_MAGIC, return;);

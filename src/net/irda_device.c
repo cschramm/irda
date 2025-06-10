@@ -41,6 +41,7 @@
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/export.h>
+#include <linux/version.h>
 
 #include <asm/ioctls.h>
 #include <linux/uaccess.h>
@@ -253,7 +254,11 @@ static int irda_task_kick(struct irda_task *task)
  */
 static void irda_task_timer_expired(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
 	struct irda_task *task = from_timer(task, t, timer);
+#else
+	struct irda_task *task = timer_container_of(task, t, timer);
+#endif
 
 	irda_task_kick(task);
 }
